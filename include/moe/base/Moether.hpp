@@ -4,6 +4,27 @@
 
 #include "Moe.hpp"
 
+namespace moe
+{
+    enum Crossover : unsigned int
+    {
+        OnePoint = 0,
+        TwoPoint,
+        Uniform
+    };
+
+    enum Mutation : unsigned int
+    {
+        NONE = 0,
+        Substitution =  1 << 0,
+        Insertion =     1 << 1,
+        Deletion =      1 << 2,
+        Translocation = 1 << 3,
+
+        ALL = Substitution | Insertion | Deletion | Translocation
+    };
+};
+
 template <typename MoeType>
 class Moether
 {
@@ -12,29 +33,37 @@ class Moether
         ~Moether();
 
         void init( unsigned int _moesPerGen, unsigned int _eliteCopies,
-                    float _mutationRate, float _crossoverRate);
+                    float _mutationRate = 0.1f, float _crossoverRate = 0.5f);
 
         void run( unsigned int _generations );
 
         void setFitnessFunction( std::function<double( const MoeType&)> _fitnessFunction);
         void setFitnessMode(bool _mode);
-        void setMaxGenomeSize(int _size);
+        void setMaxGenotypeSize( unsigned int _size);
+        void setCrossover( unsigned int _type);
+        void setMutation( unsigned int _type);
+
+        void setCrossoverRate( float _rate );
+        void setMutationRate( float _rate );
         
         const MoeType& getBestMoe() const;
 
     private:
-        std::string randomizeGenome();
+        std::string randomizeGenotype();
 
-        std::function<double( const MoeType&) > m_fitnessFunction;
+        std::function<double( const MoeType& )> m_fitnessFunction;
 
         unsigned int m_generations,
                     m_moesPerGen,
                     m_eliteCopies;
 
-        int m_maxGenomeSize = -1;
+        unsigned int m_maxGenotypeSize = 64;
         
         float m_mutationRate,
             m_crossoverRate;
+
+        unsigned int m_crossover = moe::Crossover::OnePoint,
+                    m_mutation = moe::Mutation::ALL;
 
         MoeType m_bestMoe;
 

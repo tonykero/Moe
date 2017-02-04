@@ -15,7 +15,7 @@ Moether<MoeType>::~Moether()
 
 template <typename MoeType>
 void Moether<MoeType>::init( unsigned int _moesPerGen, unsigned int _eliteCopies,
-                    float _mutationRate, float _crossoverRate )
+                    float _mutationRate, float _crossoverRate)
 {
     m_moesPerGen = _moesPerGen;
     m_eliteCopies = _eliteCopies;
@@ -28,8 +28,6 @@ void Moether<MoeType>::run( unsigned int _generations )
 {
 
     m_generations = _generations;
-    
-    //TODO: Moether::run()
 
     // Algorithm:
 
@@ -51,7 +49,7 @@ void Moether<MoeType>::run( unsigned int _generations )
     // 1)
     for(unsigned int i = 0; i < m_moesPerGen; i++)
     {
-        population[i].setGenome( randomizeGenome() );
+        population[i].setGenotype( randomizeGenotype() );
     }
 
     
@@ -106,37 +104,100 @@ void Moether<MoeType>::run( unsigned int _generations )
             MoeType selected2 = population[ b ];
             
             // 7)
-            //One point crossover
+            // One Point, Two point and Uniform crossover done
             MoeType offspring1;
-            offspring1.setGenome(selected1.getGenome().substr(0, selected1.getGenome().size()/2)
-                                +selected2.getGenome().substr(selected1.getGenome().size()/2, selected2.getGenome().size() - selected1.getGenome().size()/2));
-            
             MoeType offspring2;
-            offspring2.setGenome(selected2.getGenome().substr(0, selected2.getGenome().size()/2)
-                                +selected1.getGenome().substr(selected2.getGenome().size()/2, selected1.getGenome().size() - selected2.getGenome().size()/2));
-                                
+
+            std::string offspring1_genotype = selected1.getGenotype();
+            std::string offspring2_genotype = selected2.getGenotype();
+
+            unsigned int min = std::min( offspring1_genotype.size(), offspring2_genotype.size() );
+
+            std::uniform_real_distribution<float> distrib_index;
+            float indexCoef;
+
+            switch( m_crossover )
+            {
+                default:
+                case moe::Crossover::OnePoint:
+                    {
+                        distrib_index = std::uniform_real_distribution<float>(0.05f, 0.95f);
+
+                        indexCoef =  distrib_index( gen );
+                        unsigned int index = min * indexCoef;
+                    
+                        offspring1_genotype = offspring1_genotype.substr(0, index)
+                                        + offspring2_genotype.substr(index, offspring2_genotype.size() - index);
+                    
+                        offspring2_genotype = offspring2_genotype.substr(0, index)
+                                        + offspring1_genotype.substr(index, offspring1_genotype.size() - index);
+                    }
+                    break;
+                
+                case moe::Crossover::TwoPoint:
+                    {
+                        distrib_index = std::uniform_real_distribution<float>(0.05f, 0.45f);
+
+                        indexCoef = distrib_index( gen );
+                        unsigned int index1 = min * indexCoef;
+                    
+                        distrib_index = std::uniform_real_distribution<float>(0.55f, 0.95f);
+                        indexCoef = distrib_index( gen );
+
+                        unsigned int index2 = min * indexCoef;
+
+                        for(unsigned int i = index1; i < index2; i++)
+                        {
+                            char cs = offspring1_genotype[i];
+                            offspring1_genotype[i] = offspring2_genotype[i];
+                            offspring2_genotype[i] = cs;
+                        }
+                    }
+                    break;
+
+                case moe::Crossover::Uniform:
+                    {
+                        distrib_index = std::uniform_real_distribution<float>(0.0f, 1.0f);
+                        
+                        for(unsigned int i = 0; i < min; i++)
+                        {
+                            float prob = distrib_index( gen );
+                            if( prob <= m_crossoverRate )
+                            {
+                                char cs = offspring1_genotype[i];
+                                offspring1_genotype[i] = offspring2_genotype[i];
+                                offspring2_genotype[i] = cs;
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            offspring1.setGenotype(offspring1_genotype);
+            offspring2.setGenotype(offspring2_genotype);
+
             // 8)
+            // Mutation by substitution
+            
+            // TODO: Implement Insertion, Deletion, Translocation
             std::uniform_real_distribution<float> distrib_mutation(0.0f, 1.0f);
 
             if( distrib_mutation( gen ) <= m_mutationRate )
             {
-                std::uniform_int_distribution<unsigned int> distrib_offspring1(0, offspring1.getGenome().size());
-                std::uniform_int_distribution<unsigned int> distrib_offspring2(0, offspring2.getGenome().size());
+                std::uniform_int_distribution<unsigned int> distrib_offspring1(0, offspring1.getGenotype().size());
+                std::uniform_int_distribution<unsigned int> distrib_offspring2(0, offspring2.getGenotype().size());
 
                 char mutation;
 
                 mutation = (unsigned char)distrib_char( gen );
 
-                std::string offspring1_genome = offspring1.getGenome();
-                offspring1_genome[ distrib_offspring1(gen) ] = mutation;
-                offspring1.setGenome(offspring1_genome);
-
+                offspring1_genotype[ distrib_offspring1(gen) ] = mutation;
+                offspring1.setGenotype(offspring1_genotype);
 
                 mutation = (unsigned char)distrib_char( gen );
 
-                std::string offspring2_genome = offspring2.getGenome();
-                offspring2_genome[ distrib_offspring2(gen) ] = mutation;
-                offspring2.setGenome(offspring2_genome);
+                offspring2_genotype[ distrib_offspring2(gen) ] = mutation;
+                offspring2.setGenotype(offspring2_genotype);
 
 
 
@@ -166,9 +227,21 @@ void Moether<MoeType>::setFitnessMode(bool _mode)
 }
 
 template <typename MoeType>
-void Moether<MoeType>::setMaxGenomeSize(int _size)
+void Moether<MoeType>::setMaxGenotypeSize(unsigned int _size)
 {
-    m_maxGenomeSize = _size;
+    m_maxGenotypeSize = _size;
+}
+
+template <typename MoeType>
+void Moether<MoeType>::setCrossover(unsigned int _type)
+{
+    m_crossover = _type;
+}
+
+template <typename MoeType>
+void Moether<MoeType>::setMutation(unsigned int _type)
+{
+    m_mutation = _type;
 }
 
 template <typename MoeType>
@@ -178,13 +251,13 @@ const MoeType& Moether<MoeType>::getBestMoe() const
 }
 
 template <typename MoeType>
-std::string Moether<MoeType>::randomizeGenome()
+std::string Moether<MoeType>::randomizeGenotype()
 {
-    unsigned int genomeSize = m_maxGenomeSize;
+    unsigned int genotypeSize = m_maxGenotypeSize;
 
     std::string randomized = "";
 
-    for(unsigned int i = 0; i < genomeSize; i++)
+    for(unsigned int i = 0; i < genotypeSize; i++)
     {
         randomized += (unsigned char)distrib_char(gen);
     }
