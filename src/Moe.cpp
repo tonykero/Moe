@@ -10,9 +10,9 @@ Moe::~Moe()
     
 }
 
-const std::string& Moe::getGenome() const
+const std::string& Moe::getGenotype() const
 {
-    return m_genome;
+    return m_genotype;
 }
 
 const double& Moe::getFitness() const
@@ -20,9 +20,9 @@ const double& Moe::getFitness() const
     return m_fitness;
 }
 
-void Moe::setGenome( std::string _genome )
+void Moe::setGenotype( std::string _genotype )
 {
-    m_genome = _genome;
+    m_genotype = _genotype;
 }
 
 void Moe::setFitness( double _fitness )

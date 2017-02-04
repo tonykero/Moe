@@ -8,15 +8,15 @@ class Moe
         Moe();
         ~Moe();
 
-        void setGenome( std::string _genome );
+        void setGenotype( std::string _genotype );
         void setFitness( double _fitness );
 
-        const std::string& getGenome() const;
+        const std::string& getGenotype() const;
         const double& getFitness() const;
 
     private:
 
-        std::string m_genome;
+        std::string m_genotype;
         double m_fitness;
 
 };
