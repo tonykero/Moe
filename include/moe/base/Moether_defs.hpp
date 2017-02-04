@@ -181,6 +181,12 @@ void Moether<MoeType>::setMutation(unsigned int _type)
 }
 
 template <typename MoeType>
+void Moether<MoeType>::setGenotypeAscii( unsigned int _a, unsigned int _b )
+{
+    distrib_char = std::uniform_int_distribution<unsigned int>(_a, _b);
+}
+
+template <typename MoeType>
 const MoeType& Moether<MoeType>::getBestMoe() const
 {
     return m_bestMoe;

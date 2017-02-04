@@ -41,6 +41,8 @@ class Moether
         void            setCrossover       ( unsigned int _type );
         void            setMutation        ( unsigned int _type );
 
+        void            setGenotypeAscii   ( unsigned int _a, unsigned int _b );
+
         void            setCrossoverRate   ( float _rate );
         void            setMutationRate    ( float _rate );
         
