@@ -14,12 +14,11 @@ Moether<MoeType>::~Moether()
 }
 
 template <typename MoeType>
-void Moether<MoeType>::init( unsigned int _moesPerGen, unsigned int _eliteCopies,
-                    float _mutationRate, float _crossoverRate)
+void Moether<MoeType>::init( unsigned int _moesPerGen, unsigned int _eliteCopies, float _mutationRate, float _crossoverRate )
 {
-    m_moesPerGen = _moesPerGen;
-    m_eliteCopies = _eliteCopies;
-    m_mutationRate = _mutationRate;
+    m_moesPerGen    = _moesPerGen;
+    m_eliteCopies   = _eliteCopies;
+    m_mutationRate  = _mutationRate;
     m_crossoverRate = _crossoverRate;
 }
 
@@ -58,9 +57,11 @@ void Moether<MoeType>::run( unsigned int _generations )
     {
         // 2)
 
-        double max = 0.0;
-        double min = m_fitnessFunction(population[0]);
+        double  max = 0.0,
+                min = m_fitnessFunction(population[0]);
+        
         unsigned int maxIndex = 0;
+        
         for(unsigned int j = 0; j < m_moesPerGen; j++)
         {
             fitnesses[j] = m_fitnessFunction( population[j] );
@@ -82,13 +83,10 @@ void Moether<MoeType>::run( unsigned int _generations )
                     maxIndex = j;
                 }
             }
-                
-
         }
 
         // 3)
         m_bestMoe = population[maxIndex];
-
 
         // 4)
         std::vector<MoeType> new_population( m_eliteCopies, m_bestMoe );
@@ -98,83 +96,18 @@ void Moether<MoeType>::run( unsigned int _generations )
         {
             // 6)
             std::uniform_int_distribution<unsigned int> distrib_roulette(0, m_moesPerGen-1);
-            unsigned int a = distrib_roulette( gen );
-            unsigned int b = distrib_roulette( gen );
-            MoeType selected1 = population[ a ];
-            MoeType selected2 = population[ b ];
+            
+            unsigned int    a = distrib_roulette( gen ),
+                            b = distrib_roulette( gen );
+            MoeType selected1 = population[ a ],
+                    selected2 = population[ b ];
             
             // 7)
             // One Point, Two point and Uniform crossover done
-            MoeType offspring1;
-            MoeType offspring2;
+            MoeType offspring1,
+                    offspring2;
 
-            std::string offspring1_genotype = selected1.getGenotype();
-            std::string offspring2_genotype = selected2.getGenotype();
-
-            unsigned int min = std::min( offspring1_genotype.size(), offspring2_genotype.size() );
-
-            std::uniform_real_distribution<float> distrib_index;
-            float indexCoef;
-
-            switch( m_crossover )
-            {
-                default:
-                case moe::Crossover::OnePoint:
-                    {
-                        distrib_index = std::uniform_real_distribution<float>(0.05f, 0.95f);
-
-                        indexCoef =  distrib_index( gen );
-                        unsigned int index = min * indexCoef;
-                    
-                        offspring1_genotype = offspring1_genotype.substr(0, index)
-                                        + offspring2_genotype.substr(index, offspring2_genotype.size() - index);
-                    
-                        offspring2_genotype = offspring2_genotype.substr(0, index)
-                                        + offspring1_genotype.substr(index, offspring1_genotype.size() - index);
-                    }
-                    break;
-                
-                case moe::Crossover::TwoPoint:
-                    {
-                        distrib_index = std::uniform_real_distribution<float>(0.05f, 0.45f);
-
-                        indexCoef = distrib_index( gen );
-                        unsigned int index1 = min * indexCoef;
-                    
-                        distrib_index = std::uniform_real_distribution<float>(0.55f, 0.95f);
-                        indexCoef = distrib_index( gen );
-
-                        unsigned int index2 = min * indexCoef;
-
-                        for(unsigned int i = index1; i < index2; i++)
-                        {
-                            char cs = offspring1_genotype[i];
-                            offspring1_genotype[i] = offspring2_genotype[i];
-                            offspring2_genotype[i] = cs;
-                        }
-                    }
-                    break;
-
-                case moe::Crossover::Uniform:
-                    {
-                        distrib_index = std::uniform_real_distribution<float>(0.0f, 1.0f);
-                        
-                        for(unsigned int i = 0; i < min; i++)
-                        {
-                            float prob = distrib_index( gen );
-                            if( prob <= m_crossoverRate )
-                            {
-                                char cs = offspring1_genotype[i];
-                                offspring1_genotype[i] = offspring2_genotype[i];
-                                offspring2_genotype[i] = cs;
-                            }
-                        }
-                    }
-                    break;
-            }
-
-            offspring1.setGenotype(offspring1_genotype);
-            offspring2.setGenotype(offspring2_genotype);
+            crossover(selected1, selected2, offspring1, offspring2);
 
             // 8)
             // Mutation by substitution
@@ -182,10 +115,13 @@ void Moether<MoeType>::run( unsigned int _generations )
             // TODO: Implement Insertion, Deletion, Translocation
             std::uniform_real_distribution<float> distrib_mutation(0.0f, 1.0f);
 
+            std::string offspring1_genotype = offspring1.getGenotype(),
+                        offspring2_genotype = offspring2.getGenotype();
+
             if( distrib_mutation( gen ) <= m_mutationRate )
             {
-                std::uniform_int_distribution<unsigned int> distrib_offspring1(0, offspring1.getGenotype().size());
-                std::uniform_int_distribution<unsigned int> distrib_offspring2(0, offspring2.getGenotype().size());
+                std::uniform_int_distribution<unsigned int> distrib_offspring1(0, offspring1.getGenotype().size()),
+                                                            distrib_offspring2(0, offspring2.getGenotype().size());
 
                 char mutation;
 
@@ -253,14 +189,82 @@ const MoeType& Moether<MoeType>::getBestMoe() const
 template <typename MoeType>
 std::string Moether<MoeType>::randomizeGenotype()
 {
-    unsigned int genotypeSize = m_maxGenotypeSize;
-
     std::string randomized = "";
 
-    for(unsigned int i = 0; i < genotypeSize; i++)
-    {
+    for(unsigned int i = 0; i < m_maxGenotypeSize; i++)
         randomized += (unsigned char)distrib_char(gen);
-    }
 
     return randomized;
+}
+
+template <typename MoeType>
+void Moether<MoeType>::crossover( MoeType& _parent1, MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 )
+{
+    std::string offspring1_genotype = _parent1.getGenotype(),
+                offspring2_genotype = _parent2.getGenotype();
+
+    unsigned int min = std::min( offspring1_genotype.size(), offspring2_genotype.size() );
+
+    std::uniform_real_distribution<float> distrib_index;
+    float indexCoef;
+
+    switch( m_crossover )
+    {
+        default:
+        case moe::Crossover::OnePoint:
+        {
+            distrib_index = std::uniform_real_distribution<float>(0.05f, 0.95f);
+
+            indexCoef = distrib_index( gen );
+            unsigned int index = min * indexCoef;
+                    
+            offspring1_genotype = offspring1_genotype.substr(0, index)
+                                + offspring2_genotype.substr(index, offspring2_genotype.size() - index);
+                    
+            offspring2_genotype = offspring2_genotype.substr(0, index)
+                                + offspring1_genotype.substr(index, offspring1_genotype.size() - index);
+        }
+        break;
+                
+        case moe::Crossover::TwoPoint:
+        {
+            distrib_index = std::uniform_real_distribution<float>(0.05f, 0.45f);
+
+            indexCoef = distrib_index( gen );
+            unsigned int index1 = min * indexCoef;
+                    
+            distrib_index = std::uniform_real_distribution<float>(0.55f, 0.95f);
+            indexCoef = distrib_index( gen );
+
+            unsigned int index2 = min * indexCoef;
+
+            for(unsigned int i = index1; i < index2; i++)
+            {
+                char cs = offspring1_genotype[i];
+                offspring1_genotype[i] = offspring2_genotype[i];
+                offspring2_genotype[i] = cs;
+            }
+        }
+        break;
+
+        case moe::Crossover::Uniform:
+        {
+            distrib_index = std::uniform_real_distribution<float>(0.0f, 1.0f);
+                        
+            for(unsigned int i = 0; i < min; i++)
+            {
+                float prob = distrib_index( gen );
+                if( prob <= m_crossoverRate )
+                {
+                    char cs = offspring1_genotype[i];
+                    offspring1_genotype[i] = offspring2_genotype[i];
+                    offspring2_genotype[i] = cs;
+                }
+            }
+        }
+        break;
+    }
+
+    _offspring1.setGenotype(offspring1_genotype);
+    _offspring2.setGenotype(offspring2_genotype);
 }

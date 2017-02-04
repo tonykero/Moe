@@ -32,42 +32,40 @@ class Moether
         Moether();
         ~Moether();
 
-        void init( unsigned int _moesPerGen, unsigned int _eliteCopies,
-                    float _mutationRate = 0.1f, float _crossoverRate = 0.5f);
+        void            init   ( unsigned int _moesPerGen, unsigned int _eliteCopies, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
+        void            run    ( unsigned int _generations );
 
-        void run( unsigned int _generations );
+        void            setFitnessFunction ( std::function<double( const MoeType& )> _fitnessFunction );
+        void            setFitnessMode     ( bool _mode);
+        void            setMaxGenotypeSize ( unsigned int _size );
+        void            setCrossover       ( unsigned int _type );
+        void            setMutation        ( unsigned int _type );
 
-        void setFitnessFunction( std::function<double( const MoeType&)> _fitnessFunction);
-        void setFitnessMode(bool _mode);
-        void setMaxGenotypeSize( unsigned int _size);
-        void setCrossover( unsigned int _type);
-        void setMutation( unsigned int _type);
-
-        void setCrossoverRate( float _rate );
-        void setMutationRate( float _rate );
+        void            setCrossoverRate   ( float _rate );
+        void            setMutationRate    ( float _rate );
         
-        const MoeType& getBestMoe() const;
+        const MoeType&  getBestMoe() const;
 
     private:
-        std::string randomizeGenotype();
+        std::string     randomizeGenotype   ();
+        void            crossover           ( MoeType& _parent1, MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 );
 
-        std::function<double( const MoeType& )> m_fitnessFunction;
+        std::function< double( const MoeType& ) > m_fitnessFunction;
 
-        unsigned int m_generations,
-                    m_moesPerGen,
-                    m_eliteCopies;
-
-        unsigned int m_maxGenotypeSize = 64;
+        unsigned int    m_generations,
+                        m_moesPerGen,
+                        m_eliteCopies;
+        unsigned int    m_crossover = moe::Crossover::OnePoint,
+                        m_mutation = moe::Mutation::ALL;
+        unsigned int    m_maxGenotypeSize = 64;
         
-        float m_mutationRate,
-            m_crossoverRate;
+        float           m_mutationRate,
+                        m_crossoverRate;
 
-        unsigned int m_crossover = moe::Crossover::OnePoint,
-                    m_mutation = moe::Mutation::ALL;
+        MoeType         m_bestMoe;
 
-        MoeType m_bestMoe;
+        bool            m_mode = true;
 
-        bool m_mode = true;
 
         std::default_random_engine gen;
         std::uniform_int_distribution<unsigned int> distrib_char;
