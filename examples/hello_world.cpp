@@ -10,32 +10,32 @@ int main()
 
     moether.setFitnessFunction( [target](const Moe& moe) -> double
     {
-        std::string genome = moe.getGenome();
-        int dSize = std::abs( genome.size() - target.size() );
+        std::string genotype = moe.getGenotype();
+        int dSize = target.size() - genotype.size();
 
         // add 256 error points for each extra or lack of char
-        unsigned int error = dSize * 256;
+        unsigned int error = std::abs(dSize) * 256;
 
-        for(unsigned int i = 0; i < genome.size(); i++ )
+        for(unsigned int i = 0; i < genotype.size(); i++ )
         {
             if(i > target.size() - 1)
                 break;
 
-            error += std::abs( genome[i] - target[i] );
+            error += std::abs( genotype[i] - target[i] );
 
         }
         return error;
     });
 
-    //moether.setMaxGenomeSize();
     moether.setFitnessMode( false );
-    moether.setMaxGenomeSize(11);
+    moether.setMaxGenotypeSize( target.size() );
+    moether.setCrossover( moe::Crossover::Uniform );
 
-    moether.init( 200 , 50, 0.1, 0.5);
-    moether.run( 1000 );
+    moether.init( 200 , 40);
+    moether.run( 500 );
 
-    std::string genome = moether.getBestMoe().getGenome();
+    std::string genotype = moether.getBestMoe().getGenotype();
 
-    std::cout << genome << std::endl;
-    //std::cout << moether.getBestMoe().getFitness() << std::endl;
+    std::cout << "genotype: " << genotype << std::endl;
+    std::cout << "fitness: " << moether.getBestMoe().getFitness() << std::endl;
 }
