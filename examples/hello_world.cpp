@@ -1,5 +1,6 @@
 #include <moe/moe.hpp>
 #include <iostream>
+#include <chrono>
 
 int main()
 {
@@ -20,13 +21,19 @@ int main()
         return error;
     });
 
-    moether.setFitnessMode( false );
-    moether.setMaxGenotypeSize( target.size() );
+    moether.setFitnessMode( false );                // fitness by scoring error
+    moether.setMaxGenotypeSize( target.size() );    // adapts the size of the genotype
     moether.setCrossover( moe::Crossover::Uniform );
 
-    moether.init( 200 , 40 );
-    moether.run( 500 );
+    auto start = std::chrono::high_resolution_clock::now();
+
+        moether.init( 200 , 40 );
+        moether.run( 500 );
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> diff = end-start;
 
     std::cout   << "genotype: " << moether.getBestMoe().getGenotype() << "\n"
-                << "fitness: " << moether.getBestMoe().getFitness() << std::endl;
+                << "fitness: " << moether.getBestMoe().getFitness() << "\n"
+                << "time spent: " << diff.count() << " seconds" << std::endl;
 }
