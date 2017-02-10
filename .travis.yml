@@ -1,0 +1,32 @@
+language: cpp
+sudo: required
+dist: trusty
+
+os:
+    - linux
+    - osx
+
+compiler:
+    - gcc
+    - clang
+
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+            - george-edison55-cmake-3.x 
+        packages:
+            - gcc-5
+            - g++-5
+            - clang
+            - cmake
+
+branches:
+    only:
+        - master
+
+before_install:
+    - sudo apt-get -qq update
+
+script:
+    - mkdir build && cd build && cmake .. && cmake --build .
