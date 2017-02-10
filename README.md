@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tonykero/Moe.svg?branch=master)](https://travis-ci.org/tonykero/Moe)
+
 # Moe 
 
 Moe is a cross-platform C++14 dependency-free [ implementation / framework ] of a Generic Genetic Algorithm
