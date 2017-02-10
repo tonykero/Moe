@@ -23,7 +23,7 @@ namespace moe
 
         ALL = Substitution | Insertion | Deletion | Translocation
     };
-};
+}
 
 template <typename MoeType>
 class Moether
