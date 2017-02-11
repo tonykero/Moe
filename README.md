@@ -50,9 +50,9 @@ This contains the following features:
 
 * Mutations: ( ajustable rate )
     * Substitution
-    * Insertion ( not yet )
-    * Deletion  ( not yet )
-    * Translocation ( not yet)
+    * Insertion
+    * Deletion
+    * Translocation
 
 * Elitism ( ajustable number )
 
