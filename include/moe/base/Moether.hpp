@@ -6,23 +6,29 @@
 
 namespace moe
 {
-    enum Crossover : unsigned int
+    namespace Crossover
     {
-        OnePoint = 0,
-        TwoPoint,
-        Uniform
-    };
-
-    enum Mutation : unsigned int
+        enum : unsigned int
+        {
+            NONE = 0,
+            OnePoint,
+            TwoPoint,
+            Uniform
+        };
+    }
+    namespace Mutation
     {
-        NONE = 0,
-        Substitution =  1 << 0,
-        Insertion =     1 << 1,
-        Deletion =      1 << 2,
-        Translocation = 1 << 3,
+        enum : unsigned int
+        {
+            NONE = 0,
+            Substitution =  1 << 0,
+            Insertion =     1 << 1,
+            Deletion =      1 << 2,
+            Translocation = 1 << 3,
 
-        ALL = Substitution | Insertion | Deletion | Translocation
-    };
+            ALL = Substitution | Insertion | Deletion | Translocation
+        };
+    }
 }
 
 template <typename MoeType>
@@ -51,6 +57,7 @@ class Moether
     private:
         std::string     randomizeGenotype   ();
         void            crossover           ( MoeType& _parent1, MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 );
+        void            mutate              ( MoeType& _moe );
 
         std::function< double( const MoeType& ) > m_fitnessFunction;
 
@@ -59,7 +66,7 @@ class Moether
                         m_eliteCopies;
         unsigned int    m_crossover = moe::Crossover::OnePoint,
                         m_mutation = moe::Mutation::ALL;
-        unsigned int    m_maxGenotypeSize = 64;
+        unsigned int    m_maxGenotypeSize = 8;
         
         float           m_mutationRate,
                         m_crossoverRate;

@@ -1,4 +1,4 @@
-
+#pragma once
 #include <vector>
 
 template <typename MoeType>
@@ -110,33 +110,13 @@ void Moether<MoeType>::run( unsigned int _generations )
             crossover(selected1, selected2, offspring1, offspring2);
 
             // 8)
-            // Mutation by substitution
-            
-            // TODO: Implement Insertion, Deletion, Translocation
-            std::uniform_real_distribution<float> distrib_mutation(0.0f, 1.0f);
 
-            std::string offspring1_genotype = offspring1.getGenotype(),
-                        offspring2_genotype = offspring2.getGenotype();
+            std::uniform_real_distribution<float> distrib_mutation(0.0f, 1.0f);
 
             if( distrib_mutation( gen ) <= m_mutationRate )
             {
-                std::uniform_int_distribution<unsigned int> distrib_offspring1(0, offspring1.getGenotype().size()),
-                                                            distrib_offspring2(0, offspring2.getGenotype().size());
-
-                char mutation;
-
-                mutation = (unsigned char)distrib_char( gen );
-
-                offspring1_genotype[ distrib_offspring1(gen) ] = mutation;
-                offspring1.setGenotype(offspring1_genotype);
-
-                mutation = (unsigned char)distrib_char( gen );
-
-                offspring2_genotype[ distrib_offspring2(gen) ] = mutation;
-                offspring2.setGenotype(offspring2_genotype);
-
-
-
+                mutate(offspring1);
+                mutate(offspring2);
             }
 
             // 9)
@@ -217,6 +197,10 @@ void Moether<MoeType>::crossover( MoeType& _parent1, MoeType& _parent2, MoeType&
     switch( m_crossover )
     {
         default:
+        case moe::Crossover::NONE:
+            // it does nothing, but NEEDED
+            // in this case, _offspring1 becomes _parent1, same thing for _offspring2
+            break;
         case moe::Crossover::OnePoint:
         {
             distrib_index = std::uniform_real_distribution<float>(0.05f, 0.95f);
@@ -273,4 +257,81 @@ void Moether<MoeType>::crossover( MoeType& _parent1, MoeType& _parent2, MoeType&
 
     _offspring1.setGenotype(offspring1_genotype);
     _offspring2.setGenotype(offspring2_genotype);
+}
+
+template <typename MoeType>
+void Moether<MoeType>::mutate(MoeType& _moe)
+{
+    //TODO: assert to check m_mutation
+
+    unsigned int choosenMutation;
+    
+    std::vector<unsigned int> available;
+    if( m_mutation != moe::Mutation::NONE )
+    {
+        if( m_mutation & moe::Mutation::Substitution )
+            available.push_back( moe::Mutation::Substitution );
+        
+        if( m_mutation & moe::Mutation::Insertion )
+            available.push_back( moe::Mutation::Insertion );
+        
+        if( m_mutation & moe::Mutation::Deletion )
+            available.push_back( moe::Mutation::Deletion );
+
+        if( m_mutation & moe::Mutation::Translocation )
+            available.push_back( moe::Mutation::Translocation );
+    
+        std::uniform_int_distribution<unsigned int> dist_mutation(0, available.size()-1);
+        choosenMutation = available[ dist_mutation( gen ) ];
+    }
+    else
+        choosenMutation = moe::Mutation::NONE;
+
+    std::string moe_genotype = _moe.getGenotype();
+
+    std::uniform_int_distribution<unsigned int> dist_genotype(0, moe_genotype.size()-1);
+    switch( choosenMutation )
+    {
+        default:
+        case moe::Mutation::NONE:
+        {
+            // needed
+        }
+        break;
+
+        case moe::Mutation::Substitution:
+        {
+            char mutation = (unsigned char)distrib_char( gen );
+            moe_genotype[ dist_genotype(gen) ] = mutation;   
+        }
+        break;
+        
+        case moe::Mutation::Insertion:
+        {
+            char mutation = (unsigned char)distrib_char( gen );
+            moe_genotype.insert( moe_genotype.begin()+dist_genotype(gen), mutation );
+        }
+        break;
+        
+        case moe::Mutation::Deletion:
+        {
+            if(moe_genotype.size() > 2)
+            {
+                moe_genotype.erase( moe_genotype.begin()+ dist_genotype(gen) );
+            }
+        }
+        break;
+        
+        case moe::Mutation::Translocation:
+        {
+            unsigned int    a = dist_genotype(gen),
+                            b = dist_genotype(gen);
+            char tmp = moe_genotype[a];
+            moe_genotype[a] = moe_genotype[b];
+            moe_genotype[b] = tmp;
+        }
+        break;
+    }
+
+    _moe.setGenotype( moe_genotype );
 }
