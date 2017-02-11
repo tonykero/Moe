@@ -22,13 +22,12 @@ int main()
     });
 
     moether.setFitnessMode( false );                // fitness by scoring error
-    moether.setMaxGenotypeSize( target.size() );    // adapts the size of the genotype
     moether.setCrossover( moe::Crossover::Uniform );
 
     auto start = std::chrono::high_resolution_clock::now();
 
-        moether.init( 200 , 40 );
-        moether.run( 500 );
+        moether.init( 200 , 100 );
+        moether.run( 1500 );
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;

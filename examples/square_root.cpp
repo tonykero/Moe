@@ -1,6 +1,7 @@
 #include <moe/moe.hpp>
 #include <iostream>
 #include <chrono>
+#include <cstdlib> //atoi
 
 int main()
 {
@@ -11,7 +12,7 @@ int main()
     moether.setFitnessFunction( [n](const Moe& moe) -> double
     {
         std::string genotype = moe.getGenotype();
-        unsigned long gen = std::stoul(genotype);
+        unsigned long long gen = atoi(genotype.c_str()); //std::stoul not supported by MinGW :c
 
         double error = std::abs(n - gen*gen);
 
@@ -19,14 +20,13 @@ int main()
     });
 
     moether.setFitnessMode( false );    // fitness by scoring error
-    moether.setMaxGenotypeSize( 5 );
     moether.setGenotypeAscii(48, 57);   //only numbers
-    moether.setCrossover( moe::Crossover::Uniform );
+    moether.setCrossover( moe::Crossover::TwoPoint );
 
     auto start = std::chrono::high_resolution_clock::now();
 
-        moether.init( 250, 60 );
-        moether.run( 50 );
+        moether.init( 300, 80 );
+        moether.run( 1500 );
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;
