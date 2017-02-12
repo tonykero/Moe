@@ -1,65 +1,68 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 2.8)
 
 project( MOE )
 
 option(BUILD_SHARED "ON to build MOE as SHARED, OFF to build MOE AS STATIC" OFF)
 option(BUILD_EXAMPLES "ON to build examples" ON)
+option(DEBUG "Enable debugging symbols" OFF)
 
 include_directories( "include" )
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+
     # using Clang
-    if(DEBUG)
-        #Debug Mode
-        add_compile_options(-std=c++14
+
+    add_compile_options(
+                    -std=c++14
                     -Wall
                     -Wextra
                     -pedantic
+                    )
+    if(DEBUG)
+        #Debug Mode
+        add_compile_options(
                     -g
                     )
     else()
         #Release Mode
-        add_compile_options(-std=c++14
-                    -Wall
-                    -Wextra
-                    -pedantic
+        add_compile_options(
                     -O3
                     )
     endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    
     # using GCC
-    if(DEBUG)
-        #Debug Mode
-        add_compile_options(-std=c++14
+
+    add_compile_options(
+                    -std=c++14
                     -Wall
                     -Wextra
                     -pedantic
+                    )
+    if(DEBUG)
+        #Debug Mode
+        add_compile_options(
                     -g
                     )
     else()
         #Release Mode
-        add_compile_options(-std=c++14
-                    -Wall
-                    -Wextra
-                    -pedantic
+        add_compile_options(
                     -O3
                     )
     endif()
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+
     # using Visual Studio C++
+
+    add_compile_options(/std=c++14
+                    /W4
+                    /Wall
+                    )
     if(DEBUG)
         #Debug Mode
-        add_compile_options(/std=c++14
-                    /W4
-                    /Wall
-                    )
     else()
         #Release Mode
-        add_compile_options(/std=c++14
-                    /W4
-                    /Wall
-                    )
     endif()
 endif()
 
