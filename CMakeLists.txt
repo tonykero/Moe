@@ -98,4 +98,11 @@ if(BUILD_EXAMPLES)
 
     add_executable(square_root ${SOURCE})
     target_link_libraries(square_root ${LINK_LIBS})
+
+    set(SOURCE
+        "examples/salesman.cpp"
+        )
+    
+    add_executable(salesman ${SOURCE})
+    target_link_libraries(salesman ${LINK_LIBS})
 endif()

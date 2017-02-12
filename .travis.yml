@@ -64,3 +64,4 @@ script:
 after_success:
     - ./hello_world
     - ./square_root
+    - ./salesman
