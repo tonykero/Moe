@@ -20,12 +20,12 @@ int main()
     });
 
     moether.setFitnessMode( false );    // fitness by scoring error
-    moether.setGenotypeAscii(48, 57);   //only numbers
+    moether.setAsciiRange(48, 57);   //only numbers
     moether.setCrossover( moe::Crossover::TwoPoint );
 
     auto start = std::chrono::high_resolution_clock::now();
 
-        moether.init( 300, 80 );
+        moether.init( 400, 80 );
         moether.run( 1500 );
 
     auto end = std::chrono::high_resolution_clock::now();

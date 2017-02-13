@@ -61,9 +61,10 @@ int main()
         std::string test_string = genotype;
         remove_duplicates(test_string);
 
-        if( test_string.size() == genotype.size() )
+        if( test_string.size() == genotype.size() && genotype.size() == 4 )
         {
-             int error = -1000;
+
+            int error = -1000;
             genotype.insert(0, "A");
             genotype += "A";
 
@@ -83,9 +84,8 @@ int main()
         return fitness;
     });
 
-    moether.setMaxGenotypeSize( 4 );
-    moether.setGenotypeAscii( 66, 69 );
-    moether.setMutation( moe::Mutation::Substitution | moe::Mutation::Translocation );
+    moether.setInitGenotypeSize( 5 );
+    moether.setCharset("BCDE");
     moether.setCrossover( moe::Crossover::Uniform );
 
     auto start = std::chrono::high_resolution_clock::now();
