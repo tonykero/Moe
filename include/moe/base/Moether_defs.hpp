@@ -6,12 +6,6 @@ template <typename MoeType>
 Moether<MoeType>::Moether()
 {
     setAsciiRange(32, 255);
-
-    
-    registerMutation(std::make_unique<Substitution>(gen));
-    registerMutation(std::make_unique<Insertion>(gen));
-    registerMutation(std::make_unique<Deletion>(gen));
-    registerMutation(std::make_unique<Translocation>(gen));
 }
 
 template <typename MoeType>
@@ -30,6 +24,14 @@ void Moether<MoeType>::init( unsigned int _moesPerGen, unsigned int _eliteCopies
     
     if(m_eliteCopies & 1)
         m_eliteCopies += 1;
+
+    registerMutation( std::make_unique< Substitution    >(gen));
+    registerMutation( std::make_unique< Insertion       >(gen));
+    registerMutation( std::make_unique< Deletion        >(gen));
+    registerMutation( std::make_unique< Translocation   >(gen));
+    registerCrossover(std::make_unique< OnePoint        >(gen));
+    registerCrossover(std::make_unique< TwoPoint        >(gen));
+    registerCrossover(std::make_unique< Uniform         >(gen, m_crossoverRate));
 }
 
 template <typename MoeType>
@@ -144,9 +146,27 @@ void Moether<MoeType>::setInitGenotypeSize(unsigned int _size)
 }
 
 template <typename MoeType>
-void Moether<MoeType>::setCrossover(unsigned int _type)
+void Moether<MoeType>::setCrossover(unsigned int _crossoverID)
 {
-    m_crossover = _type;
+    m_crossover = _crossoverID;
+}
+
+template <typename MoeType>
+void Moether<MoeType>::setCrossoverEnabled(bool _crossoverEnabled)
+{
+    m_isCrossoverEnabled = _crossoverEnabled;
+}
+
+template <typename MoeType>
+void Moether<MoeType>::setMutationEnabled(bool _mutationEnabled)
+{
+    m_isMutationsEnabled = _mutationEnabled;
+}
+
+template <typename MoeType>
+void Moether<MoeType>::registerCrossover( std::unique_ptr<Crossover> _crossover )
+{
+    m_crossovers.push_back( std::move(_crossover) );
 }
 
 template <typename MoeType>
@@ -191,75 +211,14 @@ std::string Moether<MoeType>::randomizeGenotype()
 }
 
 template <typename MoeType>
-void Moether<MoeType>::crossover( MoeType& _parent1, MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 )
+void Moether<MoeType>::crossover( const MoeType& _parent1, const MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 )
 {
     std::string offspring1_genotype = _parent1.getGenotype(),
                 offspring2_genotype = _parent2.getGenotype();
 
-    unsigned int min = std::min( offspring1_genotype.size(), offspring2_genotype.size() );
-
-    std::uniform_real_distribution<float> distrib_index;
-    float indexCoef;
-
-    switch( m_crossover )
-    {
-        default:
-        case moe::Crossover::NONE:
-            break;
-        case moe::Crossover::OnePoint:
-        {
-            distrib_index = std::uniform_real_distribution<float>(0.05f, 0.95f);
-
-            indexCoef = distrib_index( gen );
-            unsigned int index = min * indexCoef;
-                    
-            offspring1_genotype = offspring1_genotype.substr(0, index)
-                                + offspring2_genotype.substr(index, offspring2_genotype.size() - index);
-                    
-            offspring2_genotype = offspring2_genotype.substr(0, index)
-                                + offspring1_genotype.substr(index, offspring1_genotype.size() - index);
-        }
-        break;
-                
-        case moe::Crossover::TwoPoint:
-        {
-            distrib_index = std::uniform_real_distribution<float>(0.05f, 0.45f);
-
-            indexCoef = distrib_index( gen );
-            unsigned int index1 = min * indexCoef;
-                    
-            distrib_index = std::uniform_real_distribution<float>(0.55f, 0.95f);
-            indexCoef = distrib_index( gen );
-
-            unsigned int index2 = min * indexCoef;
-
-            for(unsigned int i = index1; i < index2; i++)
-            {
-                char cs = offspring1_genotype[i];
-                offspring1_genotype[i] = offspring2_genotype[i];
-                offspring2_genotype[i] = cs;
-            }
-        }
-        break;
-
-        case moe::Crossover::Uniform:
-        {
-            std::bernoulli_distribution distrib_uniform = std::bernoulli_distribution( m_crossoverRate );
-            for(unsigned int i = 0; i < min; i++)
-            {
-                if( distrib_uniform( gen ) )
-                {
-                    char cs = offspring1_genotype[i];
-                    offspring1_genotype[i] = offspring2_genotype[i];
-                    offspring2_genotype[i] = cs;
-                }
-            }
-        }
-        break;
-    }
-
-    _offspring1.setGenotype(offspring1_genotype);
-    _offspring2.setGenotype(offspring2_genotype);
+    std::pair<std::string, std::string> pair = m_crossovers[ m_crossover ]->cross(offspring1_genotype, offspring2_genotype);
+    _offspring1.setGenotype( pair.first );
+    _offspring2.setGenotype( pair.second);
 }
 
 template <typename MoeType>

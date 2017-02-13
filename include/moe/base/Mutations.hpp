@@ -12,11 +12,12 @@ class Mutation
         :m_generator(_generator)
         {
 
-        };
+        }
         
         virtual ~Mutation(){};
 
         virtual std::string mutate ( const std::string& _moeGenotype, const std::string& _charset ) const = 0;
+    
     protected:
         std::default_random_engine& m_generator;
 };
