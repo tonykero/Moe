@@ -20,6 +20,9 @@ void Moether<MoeType>::init( unsigned int _moesPerGen, unsigned int _eliteCopies
     m_eliteCopies   = _eliteCopies;
     m_mutationRate  = _mutationRate;
     m_crossoverRate = _crossoverRate;
+    
+    if(m_eliteCopies & 1)
+        m_eliteCopies += 1;
 }
 
 template <typename MoeType>
@@ -28,34 +31,17 @@ void Moether<MoeType>::run( unsigned int _generations )
 
     m_generations = _generations;
 
-    // Algorithm:
-
-    // 1) Generate random population
-    //      for each generation
-    // 2) Compute fitnesses
-    // 3) Keep the best as "elite"
-    // 4) put m_eliteCopies times elite in the new generation
-    // 5) for each 2 free slots 
-    // 6) Choose 2 candidates from past generation
-    // 7) Generate 2 offsprings with crossover
-    // 8) Mutate offsprings
-    // 9) Put the 2 offsprings in the new generation
-    // 10) Set the new generation as actual
-    // 11) Step 2
-
     std::vector<MoeType> population( m_moesPerGen );
     std::vector<double> fitnesses ( m_moesPerGen );
-    // 1)
+    // 1) Generate random population
     for(unsigned int i = 0; i < m_moesPerGen; i++)
     {
         population[i].setGenotype( randomizeGenotype() );
     }
 
-    
-
     for(unsigned int i = 0; i < m_generations; i++)
     {
-        // 2)
+        // 2) Compute fitnesses
 
         double  max = 0.0,
                 min = m_fitnessFunction(population[0]);
@@ -85,16 +71,16 @@ void Moether<MoeType>::run( unsigned int _generations )
             }
         }
 
-        // 3)
+        // 3) keep the best as "elite"
         m_bestMoe = population[maxIndex];
 
-        // 4)
+        // 4) put m_eliteCopies times elite in the new generation
         std::vector<MoeType> new_population( m_eliteCopies, m_bestMoe );
 
-        // 5)
+        // 5) for each 2 free slots 
         while(new_population.size() + 2 <= m_moesPerGen)
         {
-            // 6)
+            // 6) Choose 2 candidates from past generation
             std::uniform_int_distribution<unsigned int> distrib_roulette(0, m_moesPerGen-1);
             
             unsigned int    a = distrib_roulette( gen ),
@@ -102,29 +88,28 @@ void Moether<MoeType>::run( unsigned int _generations )
             MoeType selected1 = population[ a ],
                     selected2 = population[ b ];
             
-            // 7)
-            // One Point, Two point and Uniform crossover done
+            // 7) Generate 2 offsprings with crossover
             MoeType offspring1,
                     offspring2;
 
             crossover(selected1, selected2, offspring1, offspring2);
 
-            // 8)
+            // 8) Mutate offsprings
 
-            std::uniform_real_distribution<float> distrib_mutation(0.0f, 1.0f);
+            std::bernoulli_distribution distrib_mutation( m_mutationRate );
 
-            if( distrib_mutation( gen ) <= m_mutationRate )
+            if( distrib_mutation( gen ) )
             {
                 mutate(offspring1);
                 mutate(offspring2);
             }
 
-            // 9)
+            // 9) Put the 2 offsprings in the new generation
             new_population.push_back( offspring1 );
             new_population.push_back( offspring2 );
         }
 
-        // 10)
+        // 10) Set the new generation as actual
         population = new_population;
     }
 
@@ -239,12 +224,10 @@ void Moether<MoeType>::crossover( MoeType& _parent1, MoeType& _parent2, MoeType&
 
         case moe::Crossover::Uniform:
         {
-            distrib_index = std::uniform_real_distribution<float>(0.0f, 1.0f);
-                        
+            std::bernoulli_distribution distrib_uniform = std::bernoulli_distribution( m_crossoverRate );
             for(unsigned int i = 0; i < min; i++)
             {
-                float prob = distrib_index( gen );
-                if( prob <= m_crossoverRate )
+                if( distrib_uniform( gen ) )
                 {
                     char cs = offspring1_genotype[i];
                     offspring1_genotype[i] = offspring2_genotype[i];
