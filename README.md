@@ -7,33 +7,77 @@ Moe is a cross-platform C++14 dependency-free [ implementation / framework ] of 
 ## Quick Overview
 
 The main goal of Moe is to provide a generic and easy way to implement fast solving systems
-from any complexity by using C++ features like templates & lambda functions.
+from any complexity with C++.
 
-### Moether
+Moe stands for Maybe Overpowered Entity, but isn't limited to it.
 
-Moether is the object that will execute and train Moes
-basically with those 2 functions
+Moe gives a way for the user to completely define the behavior of the Genetic Algorithm, all parameters are
+adjustable, Mutations & Crossovers can be defined and added to Moether in addition to those given by default.
+
+Let's take a look at a base sample using Moe:
 
 ```cpp
-void            init   ( unsigned int _moesPerGen, unsigned int _eliteCopies, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
-void            run    ( unsigned int _generations );
+#include <moe/moe.hpp> // base header to include the Moe library
+#include <iostream>
+
+int main()
+{
+    Moether<Moe> moether;
+
+    moether.setFitnessFunction( [](const Moe& moe) -> double
+    {
+        double fitness = 0.0;
+        
+        /* increment fitness as moe's fitness grows */
+        
+        // by calculating error and returning 1/error for example
+        // or even returning error and then use moether.setFitnessMode( false );
+        // this will inverse the order, and will jugdge moes not by their fitness
+        // but by their non-fitness
+        
+        return fitness;
+    });
+
+    // you can define custom Mutation or Crossover with the 2 following functions
+    moether.registerCrossover( /* std::unique_ptr<Crossover> */ );
+    moether.registerMutation( /* std::unique_ptr<Mutation> */ );
+
+    moether.setCrossover( /* Crossover ids */ ); // default: moe::Crossover::OnePoint
+    // default crossover ids are:
+    // moe::Crossover::OnePoint (= 0)
+    // moe::Crossover::TwoPoint (= 1)
+    // moe::Crossover::Uniform  (= 2)
+    // if you register a crossover you'll have to do:
+    moether.setCrossover( 3 ); // and so on if you register more
+
+    moether.setCrossoverEnabled( /* bool */ );  // default: true
+    moether.setMutationEnabled( /* bool */ );   // default: true
+    
+    // a charset is used to modify genotype of moes
+
+    moether.setAsciiRange( /* uint a */, /* uint b*/ ); // to use a custom charset by setting a range in the ascii table
+    //default: 32, 255
+    
+    // an other function to modify the charset:
+    moether.setCharset( /* std::string */ ); // to use an explicitly defined charset
+
+    moether.init( /* moes per generation */ , /* elite copies */, /* mutation rate */, /* crossover rate */);
+    // those 2 last paramaters are optional and set to 0.1 and 0.5 respectively
+    // crossover rate only affects Uniform Crossover
+
+    moether.run( /* number of generations */ );
+
+    // then lastly you retrieve the best element
+    Moe best_moe = moether.getBestMoe();
+
+    // now you can retrieve stuff best_moe.getGenotype() & best_moe.getFitness()
+}
 ```
 
-A lot of setters are present in Moether in order to change parameters of the Genetic Algorithm
-
-Once you've trained a certain amount of Moes you retrieve the best element with the following function:
-```cpp
-const MoeType&  getBestMoe() const;
-```
-
-### Moe
-
-Moe is an object supposed to be a trained model, it is a very simple class with few functions, Moether is written with templates to handle inheritage from the class Moe
-
-Simple problems can be solved with this class, but in all other cases, it is necessary to make a class
-that inherits from Moe.
-
-In some examples, genotype is basically containing the solution explicitly, but when problems are more complex, genotype needs a generation function and an interpretation function.
+To understand how registering Mutations and Crossovers works check files 
+[Mutations.hpp](https://github.com/tonykero/Moe/blob/master/include/moe/base/Mutations.hpp)
+& [Crossovers.hpp](https://github.com/tonykero/Moe/blob/master/include/moe/base/Crossovers.hpp)
+and function init() located at [Moether_defs.hpp Line 18](https://github.com/tonykero/Moe/blob/master/include/moe/base/Moether_defs.hpp#L18)
 
 ### Examples
 
@@ -41,22 +85,24 @@ Examples can be found [here](https://github.com/tonykero/Moe/tree/master/example
 
 ## Features
 
-This contains the following features:
+Moe contains the following features:
 
 * Crossovers:
-    * One Point ( randomly chosen )
-    * Two Point ( randomly chosen )
-    * Uniform ( adjustable rate )
+    * One Point
+    * Two Point
+    * Uniform
+    * User-defined
 
-* Mutations: ( ajustable rate )
+* Mutations:
     * Substitution
     * Insertion
     * Deletion
     * Translocation
+    * User-defined
 
-* Elitism ( ajustable number )
+* Elitism
 
-* Genetic Representation: ( enhancement needed )
+* Genetic Representation:
     * Explicit representation
     * User-defined
 
@@ -74,6 +120,21 @@ Options         | Description                   | Default Value |
 BUILD_SHARED    | builds Moe as SHARED if ON    | OFF           |
 BUILD_EXAMPLES  | build examples                | ON            |
 
+Moe was successfully tested against:
+* GCC:
+    * 4.9 (4.9.4)
+    * 5 (5.4.1)
+    * 6 (6.2)
+    * MinGW:
+        * GCC 5.3
+* Clang:
+    * 3.6 (3.6.2)
+    * 3.7 (3.7.1)
+    * 3.8 (3.8.0)
+    * 3.9 (3.9.1)
+
+the CMake script is supposed to support msvc but untested
+
 Compiling:
 
 ```
@@ -82,7 +143,6 @@ cd Moe
 mkdir build && cd build && cmake .. && cmake --build .
 ```
 builds Moe as STATIC with examples
-
 
 ## License
 
