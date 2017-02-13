@@ -1,10 +1,17 @@
 #pragma once
+
 #include <vector>
 
 template <typename MoeType>
 Moether<MoeType>::Moether()
 {
-    distrib_char = std::uniform_int_distribution<unsigned int>(32, 255);
+    setAsciiRange(32, 255);
+
+    
+    registerMutation(std::make_unique<Substitution>(gen));
+    registerMutation(std::make_unique<Insertion>(gen));
+    registerMutation(std::make_unique<Deletion>(gen));
+    registerMutation(std::make_unique<Translocation>(gen));
 }
 
 template <typename MoeType>
@@ -92,18 +99,21 @@ void Moether<MoeType>::run( unsigned int _generations )
             MoeType offspring1,
                     offspring2;
 
-            crossover(selected1, selected2, offspring1, offspring2);
+            if( m_isCrossoverEnabled )
+                crossover(selected1, selected2, offspring1, offspring2);
 
             // 8) Mutate offsprings
-
-            std::bernoulli_distribution distrib_mutation( m_mutationRate );
-
-            if( distrib_mutation( gen ) )
+            if( m_isMutationsEnabled )
             {
-                mutate(offspring1);
-                mutate(offspring2);
-            }
+                std::bernoulli_distribution distrib_mutation( m_mutationRate );
 
+                if( distrib_mutation( gen ) )
+                {
+                    mutate(offspring1);
+                    mutate(offspring2);
+                }
+            }
+            
             // 9) Put the 2 offsprings in the new generation
             new_population.push_back( offspring1 );
             new_population.push_back( offspring2 );
@@ -128,9 +138,9 @@ void Moether<MoeType>::setFitnessMode(bool _mode)
 }
 
 template <typename MoeType>
-void Moether<MoeType>::setMaxGenotypeSize(unsigned int _size)
+void Moether<MoeType>::setInitGenotypeSize(unsigned int _size)
 {
-    m_maxGenotypeSize = _size;
+    m_initGenotypeSize = _size;
 }
 
 template <typename MoeType>
@@ -140,15 +150,27 @@ void Moether<MoeType>::setCrossover(unsigned int _type)
 }
 
 template <typename MoeType>
-void Moether<MoeType>::setMutation(unsigned int _type)
+void Moether<MoeType>::registerMutation( std::unique_ptr<Mutation> _mutation )
 {
-    m_mutation = _type;
+    m_mutations.push_back( std::move(_mutation) );
 }
 
 template <typename MoeType>
-void Moether<MoeType>::setGenotypeAscii( unsigned int _a, unsigned int _b )
+void Moether<MoeType>::setAsciiRange( unsigned int _a, unsigned int _b )
 {
-    distrib_char = std::uniform_int_distribution<unsigned int>(_a, _b);
+    m_charset = "";
+    for(unsigned int i = _a; i < _b+1; i++)
+    {
+        m_charset += (char)i;
+    }
+    distrib_charset = std::uniform_int_distribution<unsigned int>(0, m_charset.size()-1);
+}
+
+template <typename MoeType>
+void Moether<MoeType>::setCharset( const std::string& _charset )
+{
+    m_charset = _charset;
+    distrib_charset = std::uniform_int_distribution<unsigned int>(0, m_charset.size()-1);
 }
 
 template <typename MoeType>
@@ -162,8 +184,8 @@ std::string Moether<MoeType>::randomizeGenotype()
 {
     std::string randomized = "";
 
-    for(unsigned int i = 0; i < m_maxGenotypeSize; i++)
-        randomized += (unsigned char)distrib_char(gen);
+    for(unsigned int i = 0; i < m_initGenotypeSize; i++)
+        randomized += m_charset[ distrib_charset(gen) ];
 
     return randomized;
 }
@@ -183,8 +205,6 @@ void Moether<MoeType>::crossover( MoeType& _parent1, MoeType& _parent2, MoeType&
     {
         default:
         case moe::Crossover::NONE:
-            // it does nothing, but NEEDED
-            // in this case, _offspring1 becomes _parent1, same thing for _offspring2
             break;
         case moe::Crossover::OnePoint:
         {
@@ -245,76 +265,6 @@ void Moether<MoeType>::crossover( MoeType& _parent1, MoeType& _parent2, MoeType&
 template <typename MoeType>
 void Moether<MoeType>::mutate(MoeType& _moe)
 {
-    //TODO: assert to check m_mutation
-
-    unsigned int choosenMutation;
-    
-    std::vector<unsigned int> available;
-    if( m_mutation != moe::Mutation::NONE )
-    {
-        if( m_mutation & moe::Mutation::Substitution )
-            available.push_back( moe::Mutation::Substitution );
-        
-        if( m_mutation & moe::Mutation::Insertion )
-            available.push_back( moe::Mutation::Insertion );
-        
-        if( m_mutation & moe::Mutation::Deletion )
-            available.push_back( moe::Mutation::Deletion );
-
-        if( m_mutation & moe::Mutation::Translocation )
-            available.push_back( moe::Mutation::Translocation );
-    
-        std::uniform_int_distribution<unsigned int> dist_mutation(0, available.size()-1);
-        choosenMutation = available[ dist_mutation( gen ) ];
-    }
-    else
-        choosenMutation = moe::Mutation::NONE;
-
-    std::string moe_genotype = _moe.getGenotype();
-
-    std::uniform_int_distribution<unsigned int> dist_genotype(0, moe_genotype.size()-1);
-    switch( choosenMutation )
-    {
-        default:
-        case moe::Mutation::NONE:
-        {
-            // needed
-        }
-        break;
-
-        case moe::Mutation::Substitution:
-        {
-            char mutation = (unsigned char)distrib_char( gen );
-            moe_genotype[ dist_genotype(gen) ] = mutation;   
-        }
-        break;
-        
-        case moe::Mutation::Insertion:
-        {
-            char mutation = (unsigned char)distrib_char( gen );
-            moe_genotype.insert( moe_genotype.begin()+dist_genotype(gen), mutation );
-        }
-        break;
-        
-        case moe::Mutation::Deletion:
-        {
-            if(moe_genotype.size() > 2)
-            {
-                moe_genotype.erase( moe_genotype.begin()+ dist_genotype(gen) );
-            }
-        }
-        break;
-        
-        case moe::Mutation::Translocation:
-        {
-            unsigned int    a = dist_genotype(gen),
-                            b = dist_genotype(gen);
-            char tmp = moe_genotype[a];
-            moe_genotype[a] = moe_genotype[b];
-            moe_genotype[b] = tmp;
-        }
-        break;
-    }
-
-    _moe.setGenotype( moe_genotype );
+    std::uniform_int_distribution<unsigned int> distrib_mutations(0, m_mutations.size()-1);
+    _moe.setGenotype( m_mutations[ distrib_mutations( gen ) ]->mutate( _moe.getGenotype(), m_charset ) );
 }

@@ -71,6 +71,7 @@ set(SOURCES
     "include/moe/base/Moe.hpp"
     "include/moe/base/Moether.hpp"
     "include/moe/base/Moether_defs.hpp"
+    "include/moe/base/Mutations.hpp"
     "include/moe/moe.hpp"
     "src/Moe.cpp"
     )
