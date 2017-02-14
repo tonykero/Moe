@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Moe.hpp"
 #include <random>
-//namespace moe
-//{
+
+#include "Moe.hpp"
 
 class Mutation
 {
@@ -114,5 +113,3 @@ class Translocation : public Mutation
             return moe_genotype;
         }
 };
-
-//}

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 template <typename MoeType>
 Moether<MoeType>::Moether()
 {

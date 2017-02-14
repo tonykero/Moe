@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Moe.hpp"
 #include <random>
+
+#include "Moe.hpp"
 
 class Crossover
 {
