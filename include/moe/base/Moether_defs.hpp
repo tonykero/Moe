@@ -164,6 +164,24 @@ void Moether<MoeType>::setMutationEnabled(bool _mutationEnabled)
 }
 
 template <typename MoeType>
+const bool& Moether<MoeType>::isFitnessMode() const
+{
+    return m_mode;
+}
+
+template <typename MoeType>
+const bool& Moether<MoeType>::isCrossoverEnabled() const
+{
+    return m_isCrossoverEnabled;
+}
+
+template <typename MoeType>
+const bool& Moether<MoeType>::isMutationEnabled() const
+{
+    return m_isMutationsEnabled;
+}
+
+template <typename MoeType>
 void Moether<MoeType>::registerCrossover( std::unique_ptr<Crossover> _crossover )
 {
     m_crossovers.push_back( std::move(_crossover) );
@@ -191,6 +209,12 @@ void Moether<MoeType>::setCharset( const std::string& _charset )
 {
     m_charset = _charset;
     distrib_charset = std::uniform_int_distribution<unsigned int>(0, m_charset.size()-1);
+}
+
+template <typename MoeType>
+const std::string& Moether<MoeType>::getCharset() const
+{
+    return m_charset;
 }
 
 template <typename MoeType>

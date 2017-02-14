@@ -27,30 +27,35 @@ class Moether
         Moether ();
         ~Moether();
 
-        void            init   ( unsigned int _moesPerGen, unsigned int _eliteCopies, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
-        void            run    ( unsigned int _generations );
+        void                init   ( unsigned int _moesPerGen, unsigned int _eliteCopies, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
+        void                run    ( unsigned int _generations );
 
-        void            setFitnessFunction  ( std::function<double( const MoeType& )> _fitnessFunction );
-        void            setFitnessMode      ( bool _mode);
-        void            setInitGenotypeSize ( unsigned int _size );
+        void                setFitnessFunction  ( std::function<double( const MoeType& )> _fitnessFunction );
+        void                setFitnessMode      ( bool _mode);
+        void                setInitGenotypeSize ( unsigned int _size );
 
-        void            setCrossover        ( unsigned int _crossoverID );
-        void            setCrossoverEnabled ( bool _crossoverEnabled );
-        void            setMutationEnabled  ( bool _mutationEnabled );
+        void                setCrossover        ( unsigned int _crossoverID );
+        void                setCrossoverEnabled ( bool _crossoverEnabled );
+        void                setMutationEnabled  ( bool _mutationEnabled );
 
-        void            registerCrossover   ( std::unique_ptr<Crossover>);
-        void            registerMutation    ( std::unique_ptr<Mutation> );
+        const bool&         isFitnessMode       () const;
+        const bool&         isCrossoverEnabled  () const;
+        const bool&         isMutationEnabled   () const;
 
-        void            setAsciiRange       ( unsigned int _a, unsigned int _b );
-        void            setCharset          ( const std::string& _charset );
-        
-        const MoeType&  getBestMoe          () const;
+        void                registerCrossover   ( std::unique_ptr<Crossover>);
+        void                registerMutation    ( std::unique_ptr<Mutation> );
+
+        void                setAsciiRange       ( unsigned int _a, unsigned int _b );
+        void                setCharset          ( const std::string& _charset );
+        const std::string&  getCharset          () const;
+
+        const MoeType&      getBestMoe          () const;
 
     private:
         /* private member functions */
-        std::string     randomizeGenotype   ();
-        void            crossover           ( const MoeType& _parent1, const MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 );
-        void            mutate              ( MoeType& _moe );
+        std::string         randomizeGenotype   ();
+        void                crossover           ( const MoeType& _parent1, const MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 );
+        void                mutate              ( MoeType& _moe );
 
         std::function< double( const MoeType& ) > m_fitnessFunction;
         // ---
