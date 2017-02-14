@@ -119,6 +119,7 @@ Options         | Description                   | Default Value |
 --------------- | ----------------------------- | ------------- |
 BUILD_SHARED    | builds Moe as SHARED if ON    | OFF           |
 BUILD_EXAMPLES  | build examples                | ON            |
+DEBUG           | Enable debugging symbols      | OFF           |
 
 Moe was successfully tested against:
 * GCC:
