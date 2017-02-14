@@ -61,18 +61,15 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
                     )
     if(DEBUG)
         #Debug Mode
+        add_compile_options( /Zi )
     else()
         #Release Mode
+        add_compile_options( /Ox )
     endif()
 endif()
 
 
 set(SOURCES
-    "include/moe/base/Moe.hpp"
-    "include/moe/base/Moether.hpp"
-    "include/moe/base/Moether_defs.hpp"
-    "include/moe/base/Mutations.hpp"
-    "include/moe/base/Crossovers.hpp"
     "include/moe/moe.hpp"
     "src/Moe.cpp"
     )
