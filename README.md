@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/tonykero/Moe.svg?branch=master)](https://travis-ci.org/tonykero/Moe)
-
-# Moe 
+# Moe
+[![Travis branch](https://img.shields.io/travis/tonykero/Moe/master.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe)
+[![license](https://img.shields.io/github/license/tonykero/Moe.svg?style=flat-square)](https://github.com/tonykero/Moe/blob/master/LICENSE)
 
 Moe is a cross-platform C++14 dependency-free [ implementation / framework ] of a Generic Genetic Algorithm
 
@@ -145,4 +145,4 @@ builds Moe as STATIC with examples
 
 ## License
 
-The MIT License
+[The MIT License](https://opensource.org/licenses/MIT)
