@@ -1,9 +1,16 @@
 #pragma once
-
 template <typename MoeType>
 Moether<MoeType>::Moether()
 {
     setAsciiRange(32, 255);
+
+    registerMutation( std::make_unique< Substitution    >(gen));
+    registerMutation( std::make_unique< Insertion       >(gen));
+    registerMutation( std::make_unique< Deletion        >(gen));
+    registerMutation( std::make_unique< Translocation   >(gen));
+    registerCrossover(std::make_unique< OnePoint        >(gen));
+    registerCrossover(std::make_unique< TwoPoint        >(gen));
+    registerCrossover(std::make_unique< Uniform         >(gen, m_crossoverRate));
 }
 
 template <typename MoeType>
@@ -23,13 +30,7 @@ void Moether<MoeType>::init( unsigned int _moesPerGen, unsigned int _eliteCopies
     if(m_eliteCopies & 1)
         m_eliteCopies += 1;
 
-    registerMutation( std::make_unique< Substitution    >(gen));
-    registerMutation( std::make_unique< Insertion       >(gen));
-    registerMutation( std::make_unique< Deletion        >(gen));
-    registerMutation( std::make_unique< Translocation   >(gen));
-    registerCrossover(std::make_unique< OnePoint        >(gen));
-    registerCrossover(std::make_unique< TwoPoint        >(gen));
-    registerCrossover(std::make_unique< Uniform         >(gen, m_crossoverRate));
+    
 }
 
 template <typename MoeType>

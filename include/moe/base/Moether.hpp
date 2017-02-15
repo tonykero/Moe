@@ -68,8 +68,8 @@ class Moether
         unsigned int    m_initGenotypeSize = 8;
         unsigned int    m_crossover = moe::Crossover::OnePoint;
         
-        float           m_mutationRate,
-                        m_crossoverRate;
+        float           m_mutationRate  = 0.1f,
+                        m_crossoverRate = 0.5f;
 
         bool            m_mode = true,
                         m_isCrossoverEnabled = true,

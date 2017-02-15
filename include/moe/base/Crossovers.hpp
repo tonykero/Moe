@@ -81,7 +81,7 @@ class TwoPoint : public Crossover
 class Uniform : public Crossover
 {
     public:
-        Uniform( std::default_random_engine& _generator, float _crossoverRate)
+        Uniform( std::default_random_engine& _generator, float& _crossoverRate)
         :Crossover(_generator), m_crossoverRate(_crossoverRate)
         {
 
@@ -108,5 +108,5 @@ class Uniform : public Crossover
             return ret;
         }
     private:
-        float m_crossoverRate;
+        float& m_crossoverRate;
 };
