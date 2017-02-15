@@ -39,7 +39,7 @@ int main()
     });
 
     // you can define custom Mutation or Crossover with the 2 following functions
-    moether.registerCrossover( /* std::unique_ptr<Crossover> */ );
+    moether.registerCrossover( /* std::unique_ptr<Crossover> */ );  // when registering a crossover, it selects it
     moether.registerMutation( /* std::unique_ptr<Mutation> */ );
 
     moether.setCrossover( /* Crossover ids */ ); // default: moe::Crossover::OnePoint
@@ -47,8 +47,6 @@ int main()
     // moe::Crossover::OnePoint (= 0)
     // moe::Crossover::TwoPoint (= 1)
     // moe::Crossover::Uniform  (= 2)
-    // if you register a crossover you'll have to do:
-    moether.setCrossover( 3 ); // and so on if you register more
 
     moether.setCrossoverEnabled( /* bool */ );  // default: true
     moether.setMutationEnabled( /* bool */ );   // default: true
@@ -77,7 +75,7 @@ int main()
 To understand how registering Mutations and Crossovers works check files 
 [Mutations.hpp](https://github.com/tonykero/Moe/blob/master/include/moe/base/Mutations.hpp)
 & [Crossovers.hpp](https://github.com/tonykero/Moe/blob/master/include/moe/base/Crossovers.hpp)
-and function init() located at [Moether_defs.hpp Line 18](https://github.com/tonykero/Moe/blob/master/include/moe/base/Moether_defs.hpp#L18)
+and [Moether_defs.hpp Line 7 - 13](https://github.com/tonykero/Moe/blob/master/include/moe/base/Moether_defs.hpp#L7)
 
 ### Examples
 
