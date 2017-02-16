@@ -131,8 +131,8 @@ Moe was successfully tested against:
     * 3.7 (3.7.1)
     * 3.8 (3.8.0)
     * 3.9 (3.9.1)
-
-the CMake script is supposed to support msvc but untested
+* MSVC:
+    * 19.0 ( Visual Studio 14 2015 )
 
 Compiling:
 
@@ -143,6 +143,8 @@ mkdir build && cd build && cmake .. && cmake --build .
 ```
 builds Moe as STATIC with examples
 
+> NOTE: with msvc `cmake --build .` becomes `cmake --build . --config Release` (or Debug)
+> > known issue: building Moe as a shared library with msvc fails
 ## License
 
 [The MIT License](https://opensource.org/licenses/MIT)
