@@ -59,7 +59,10 @@ before_script:
     - if [ "$COMPILER" = "clang++-3.9"  ]; then export CXX="clang++-3.9" CC="clang-3.9";    fi
 
 script:
-    - mkdir build && cd build && cmake .. && cmake --build .
+    - mkdir build && cd build
+    - cmake -DBUILD_SHARED=ON .. && cmake --build .
+    - rm -rf *.*
+    - cmake .. && cmake --build .
 
 after_success:
     - ./hello_world
