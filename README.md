@@ -145,6 +145,7 @@ builds Moe as STATIC with examples
 
 > NOTE: with msvc `cmake --build .` becomes `cmake --build . --config Release` (or Debug)
 > > known issue: building Moe as a shared library with msvc fails
+
 ## License
 
 [The MIT License](https://opensource.org/licenses/MIT)
