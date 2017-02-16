@@ -61,10 +61,9 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
                     )
     if(DEBUG)
         #Debug Mode
-        add_compile_options( /Zi )
     else()
         #Release Mode
-        add_compile_options( /Ox )
+        add_compile_options( /O2t )
     endif()
 endif()
 

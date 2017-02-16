@@ -1,5 +1,10 @@
 #include <moe/moe.hpp>
 #include <iostream>
+
+#ifdef _MSC_VER
+    #include <string> // needed with MSVC 19.0 for overloaded << on std::string
+#endif
+
 #include <chrono>
 #include <cstdlib> //atoi
 
@@ -14,7 +19,7 @@ int main()
         std::string genotype = moe.getGenotype();
         unsigned long long gen = atoi(genotype.c_str()); //std::stoul not supported by MinGW :c
 
-        double error = std::abs(n - gen*gen);
+        double error = std::abs((int)(n - gen*gen));
 
         return error;
     });

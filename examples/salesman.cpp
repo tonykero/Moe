@@ -1,8 +1,12 @@
 #include <moe/moe.hpp>
 #include <iostream>
+
+#ifdef _MSC_VER
+    #include <string> // needed with MSVC 19.0 for overloaded << on std::string
+#endif
+
 #include <chrono>
 #include <unordered_map>
-#include <algorithm>
 
 void remove_duplicates(std::string &str)
 {
