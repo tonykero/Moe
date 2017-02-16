@@ -17,9 +17,9 @@ int main()
     moether.setFitnessFunction( [n](const Moe& moe) -> double
     {
         std::string genotype = moe.getGenotype();
-        unsigned long long gen = atoi(genotype.c_str()); //std::stoul not supported by MinGW :c
-
-        double error = std::abs((int)(n - gen*gen));
+        long long gen = atoi(genotype.c_str()); //std::stoul not supported by MinGW :c
+        
+        double error = std::abs((long long)(n - gen*gen));
 
         return error;
     });
