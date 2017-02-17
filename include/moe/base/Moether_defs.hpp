@@ -4,13 +4,13 @@ Moether<MoeType>::Moether()
 {
     setAsciiRange(32, 255);
 
-    registerMutation( std::make_unique< Substitution    >(gen));
-    registerMutation( std::make_unique< Insertion       >(gen));
-    registerMutation( std::make_unique< Deletion        >(gen));
-    registerMutation( std::make_unique< Translocation   >(gen));
-    registerCrossover(std::make_unique< OnePoint        >(gen));
-    registerCrossover(std::make_unique< TwoPoint        >(gen));
-    registerCrossover(std::make_unique< Uniform         >(gen, m_crossoverRate));
+    registerMutation( std::make_unique< Substitution    >(gen), moe::Mutation::Substitution );
+    registerMutation( std::make_unique< Insertion       >(gen), moe::Mutation::Insertion    );
+    registerMutation( std::make_unique< Deletion        >(gen), moe::Mutation::Deletion     );
+    registerMutation( std::make_unique< Translocation   >(gen), moe::Mutation::Translocation);
+    registerCrossover(std::make_unique< OnePoint        >(gen), moe::Crossover::OnePoint    );
+    registerCrossover(std::make_unique< TwoPoint        >(gen), moe::Crossover::TwoPoint    );
+    registerCrossover(std::make_unique< Uniform         >(gen, m_crossoverRate), moe::Crossover::Uniform);
 }
 
 template <typename MoeType>
@@ -181,15 +181,38 @@ const bool& Moether<MoeType>::isMutationEnabled() const
 }
 
 template <typename MoeType>
-void Moether<MoeType>::registerCrossover( std::unique_ptr<Crossover> _crossover )
+void Moether<MoeType>::registerCrossover( std::unique_ptr<Crossover> _crossover, unsigned int _id )
 {
-    m_crossovers.push_back( std::move(_crossover) );
+    m_crossovers[_id] = std::move(_crossover);
 }
 
 template <typename MoeType>
-void Moether<MoeType>::registerMutation( std::unique_ptr<Mutation> _mutation )
+void Moether<MoeType>::registerMutation( std::unique_ptr<Mutation> _mutation, unsigned int _id )
 {
-    m_mutations.push_back( std::move(_mutation) );
+    m_mutations[_id] = std::move(_mutation);
+    updateKeys();
+}
+
+template <typename MoeType>
+void Moether<MoeType>::unregisterCrossover( unsigned int _id )
+{
+    m_crossovers.erase(_id);
+}
+
+template <typename MoeType>
+void Moether<MoeType>::unregisterMutation( unsigned int _id )
+{
+    m_mutations.erase(_id);
+    updateKeys();
+}
+
+template <typename MoeType>
+void Moether<MoeType>::updateKeys()
+{
+    m_keys.clear();
+    m_keys.reserve(m_mutations.size());
+    for(const auto& i : m_mutations)
+        m_keys.push_back(i.first);
 }
 
 template <typename MoeType>
@@ -247,6 +270,6 @@ void Moether<MoeType>::crossover( const MoeType& _parent1, const MoeType& _paren
 template <typename MoeType>
 void Moether<MoeType>::mutate(MoeType& _moe)
 {
-    std::uniform_int_distribution<unsigned int> distrib_mutations(0, m_mutations.size()-1);
-    _moe.setGenotype( m_mutations[ distrib_mutations( gen ) ]->mutate( _moe.getGenotype(), m_charset ) );
+    std::uniform_int_distribution<unsigned int> distrib_mutations(0, m_keys.size()-1);
+    _moe.setGenotype( m_mutations[ m_keys[distrib_mutations( gen )] ]->mutate( _moe.getGenotype(), m_charset ) );
 }

@@ -2,6 +2,7 @@
 
 #include <random>
 #include <memory>
+#include <unordered_map>
 
 #include "Moe.hpp"
 #include "Mutations.hpp"
@@ -16,6 +17,16 @@ namespace moe
             OnePoint = 0,
             TwoPoint,
             Uniform
+        };
+    }
+    namespace Mutation
+    {
+        enum : const unsigned int
+        {
+            Substitution = 0,
+            Insertion,
+            Deletion,
+            Translocation
         };
     }
 }
@@ -42,8 +53,10 @@ class Moether
         const bool&         isCrossoverEnabled  () const;
         const bool&         isMutationEnabled   () const;
 
-        void                registerCrossover   ( std::unique_ptr<Crossover>);
-        void                registerMutation    ( std::unique_ptr<Mutation> );
+        void                registerCrossover   ( std::unique_ptr<Crossover>, unsigned int _id);
+        void                registerMutation    ( std::unique_ptr<Mutation> , unsigned int _id);
+        void                unregisterCrossover ( unsigned int _id );
+        void                unregisterMutation  ( unsigned int _id );
 
         void                setAsciiRange       ( unsigned int _a, unsigned int _b );
         void                setCharset          ( const std::string& _charset );
@@ -53,6 +66,7 @@ class Moether
 
     private:
         /* private member functions */
+        void                updateKeys          ();
         std::string         randomizeGenotype   ();
         void                crossover           ( const MoeType& _parent1, const MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 );
         void                mutate              ( MoeType& _moe );
@@ -75,8 +89,9 @@ class Moether
                         m_isMutationsEnabled = true;
         // ---
 
-        std::vector< std::unique_ptr<Mutation> > m_mutations;
-        std::vector< std::unique_ptr<Crossover>> m_crossovers;
+        std::unordered_map< unsigned int, std::unique_ptr<Mutation> > m_mutations;
+        std::unordered_map< unsigned int, std::unique_ptr<Crossover>> m_crossovers;
+        std::vector<unsigned int> m_keys;
 
         MoeType         m_bestMoe;
         std::string     m_charset;
