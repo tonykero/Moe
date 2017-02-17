@@ -88,9 +88,11 @@ int main()
         return fitness;
     });
 
-    moether.setInitGenotypeSize( 5 );
+    moether.setInitGenotypeSize( 4 );
     moether.setCharset("BCDE");
     moether.setCrossover( moe::Crossover::Uniform );
+    moether.unregisterMutation( moe::Mutation::Insertion );
+    moether.unregisterMutation( moe::Mutation::Deletion );
 
     auto start = std::chrono::high_resolution_clock::now();
 
