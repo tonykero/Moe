@@ -42,6 +42,11 @@ int main()
     moether.registerCrossover( /* std::unique_ptr<Crossover> */ );  // when registering a crossover, it selects it
     moether.registerMutation( /* std::unique_ptr<Mutation> */ );
 
+    // you can unregister Mutations & Crossovers even those by default
+    moether.unregisterCrossover( /* unsigned int id */ ); // only relevant for custom-defined crossover
+    moether.unregisterMutation( /* unsigned int id */ );
+    // examples/salesman.cpp uses unregisterMutation()
+
     moether.setCrossover( /* Crossover ids */ ); // default: moe::Crossover::OnePoint
     // default crossover ids are:
     // moe::Crossover::OnePoint (= 0)
