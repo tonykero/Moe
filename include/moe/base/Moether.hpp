@@ -8,29 +8,6 @@
 #include "Mutations.hpp"
 #include "Crossovers.hpp"
 
-namespace moe
-{
-    namespace Crossover
-    {
-        enum : const unsigned int
-        {
-            OnePoint = 0,
-            TwoPoint,
-            Uniform
-        };
-    }
-    namespace Mutation
-    {
-        enum : const unsigned int
-        {
-            Substitution = 0,
-            Insertion,
-            Deletion,
-            Translocation
-        };
-    }
-}
-
 template <typename MoeType>
 class Moether
 {

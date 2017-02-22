@@ -4,6 +4,20 @@
 
 #include "Moe.hpp"
 
+namespace moe
+{
+namespace Mutation
+{
+    enum : const unsigned int
+    {
+        Substitution = 0,
+        Insertion,
+        Deletion,
+        Translocation
+    };
+}
+}
+
 class Mutation
 {
     public:

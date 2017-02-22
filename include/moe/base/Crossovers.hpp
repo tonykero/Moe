@@ -4,6 +4,19 @@
 
 #include "Moe.hpp"
 
+namespace moe
+{
+namespace Crossover
+{
+    enum : const unsigned int
+    {
+        OnePoint = 0,
+        TwoPoint,
+        Uniform
+    };
+}
+}
+
 class Crossover
 {
     public:
