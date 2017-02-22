@@ -6,7 +6,29 @@ environment:
   cmake: C:\projects\cmake-3.8.0-rc1-win32-x86\bin\cmake.exe
   matrix:
   - generator : Visual Studio 14
+    configuration: Debug
+    environment:
+      cmakeOption: -DDEBUG=ON
+      outBuild: C:\projects\moe\build\Debug
+
+  - generator : Visual Studio 14
+    configuration: Release
+    environment:
+      cmakeOption: -DDEBUG=OFF
+      outBuild: C:\projects\moe\build\Release
+
   - generator : Visual Studio 14 Win64
+    configuration: Debug
+    environment:
+      cmakeOption: -DDEBUG=ON
+      outBuild: C:\projects\moe\build\Debug
+
+  - generator : Visual Studio 14 Win64
+    configuration: Release
+    environment:
+      cmakeOption: -DDEBUG=OFF
+      outBuild: C:\projects\moe\build\Release
+
 
 version: '{branch}-{build}'
 
@@ -22,18 +44,14 @@ install:
   - cmd: 7z x cmake.zip -o"C:\projects" -y > nul
   - cmd: '%cmake% --version'
 
-configuration: 
-  - Debug
-  - Release
-
 before_build:
   - cmd: cd %home%\moe
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: '%cmake% -G "%generator%" ..'
+  - cmd: '%cmake% -G "%generator%" %cmakeOption% ..'
 
 after_build:
-  - cmd: 'cd C:\projects\moe\build\Release'
+  - cmd: 'cd %outBuild%'
   - cmd: hello_world.exe
   - cmd: square_root.exe
   - cmd: salesman.exe
