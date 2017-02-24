@@ -60,8 +60,6 @@ before_script:
 
 script:
     - mkdir build && cd build
-    - cmake -DBUILD_SHARED=ON .. && cmake --build .
-    - rm -rf *.*
     - cmake .. && cmake --build .
 
 after_success:
