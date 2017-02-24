@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project( MOE )
 
-option(BUILD_SHARED "ON to build MOE as SHARED, OFF to build MOE AS STATIC" OFF)
 option(BUILD_EXAMPLES "ON to build examples" ON)
-option(DEBUG "Enable debugging symbols" OFF)
+option(DEBUG "Enable debugging symbols flag" OFF)
 
 include_directories( "include" )
 
@@ -67,40 +66,23 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     endif()
 endif()
 
-
-set(SOURCES
-    "include/moe/moe.hpp"
-    "src/Moe.cpp"
-    )
-
-if(BUILD_SHARED)
-    add_library(MOE SHARED ${SOURCES})
-else()
-    add_library(MOE STATIC ${SOURCES})
-endif()
-
 if(BUILD_EXAMPLES)
-
-    set(LINK_LIBS ${LINK_LIBS} MOE)
 
     set(SOURCE
         "examples/hello_world.cpp"
         )
 
     add_executable(hello_world ${SOURCE})
-    target_link_libraries(hello_world ${LINK_LIBS})
 
     set(SOURCE
         "examples/square_root.cpp"
         )
 
     add_executable(square_root ${SOURCE})
-    target_link_libraries(square_root ${LINK_LIBS})
 
     set(SOURCE
         "examples/salesman.cpp"
         )
     
     add_executable(salesman ${SOURCE})
-    target_link_libraries(salesman ${LINK_LIBS})
 endif()
