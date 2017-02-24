@@ -6,20 +6,18 @@
 #endif
 
 #include <chrono>
-#include <cstdlib> //atoi
-#include <cstdint>
 
-uint64_t translate(const std::vector<int>& _vec);
+long long translate(const std::vector<int>& _vec);
 
 int main()
 {
     Moether<int> moether;
 
-    uint64_t n = 2261953600;
+    long long n = 2261953600;
 
     moether.setFitnessFunction( [n](const Moe<int>& moe) -> double
     {
-        uint64_t genotype = translate(moe.genotype);
+        long long genotype = translate(moe.genotype);
                 
         double error = std::abs(n - genotype*genotype);
 
@@ -38,16 +36,16 @@ int main()
     std::chrono::duration<float> diff = end-start;
 
 
-    uint64_t genotype = translate(moether.getBestMoe().genotype);
+    long long genotype = translate(moether.getBestMoe().genotype);
 
     std::cout   << "genotype: "     << genotype << "\n"
                 << "fitness: "      << moether.getBestMoe().fitness << "\n"
                 << "time spent: "   << diff.count() << " seconds" << std::endl;
 }
 
-uint64_t translate(const std::vector<int>& _vec)
+long long translate(const std::vector<int>& _vec)
 {
-    uint64_t value = 0;
+    long long value = 0;
     for( unsigned int i = 0; i < _vec.size(); i++ )
     {
         value += std::round(std::pow(10, _vec.size()-i-1)*_vec[i]);
