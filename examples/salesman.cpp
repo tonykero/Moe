@@ -8,10 +8,10 @@
 #include <chrono>
 #include <unordered_map>
 
-void remove_duplicates(std::string &str)
+void remove_duplicates(std::vector<char> &str)
 {
-    std::string unique = "";
-    unique += str[0];
+    std::vector<char> unique;
+    unique.push_back(str[0]);
     for(unsigned int i = 1; i < str.size(); i++)
     {
         bool found = false;
@@ -21,14 +21,14 @@ void remove_duplicates(std::string &str)
                 found = true;
         }
         if(found == false)
-            unique += str[i];
+            unique.push_back(str[i]);
     }
     str = unique;
 }
 
 int main()
 {
-    Moether<Moe> moether;
+    Moether<char> moether;
     
     std::unordered_map< std::string, unsigned int > distances;
     distances["AB"] = 100;
@@ -56,21 +56,21 @@ int main()
     distances["EC"] = distances["CE"];
     distances["ED"] = distances["DE"];
 
-    moether.setFitnessFunction( [&distances](const Moe& moe) -> double
+    moether.setFitnessFunction( [&distances](const Moe<char>& moe) -> double
     {
-        std::string genotype = moe.getGenotype();
+        std::vector<char> genotype = moe.genotype;
 
         unsigned int fitness = 0;
 
-        std::string test_string = genotype;
+        std::vector<char> test_string = genotype;
         remove_duplicates(test_string);
 
         if( test_string.size() == genotype.size() && genotype.size() == 4 )
         {
 
             int error = -1000;
-            genotype.insert(0, "A");
-            genotype += "A";
+            genotype.insert(genotype.begin(), 'A');
+            genotype.push_back('A');
 
             while( genotype.size() >= 2 )
             {
@@ -89,7 +89,7 @@ int main()
     });
 
     moether.setInitGenotypeSize( 4 );
-    moether.setCharset("BCDE");
+    moether.setDataset( {'B', 'C', 'D', 'E'} );
     moether.setCrossover( moe::Crossover::Uniform );
     moether.unregisterMutation( moe::Mutation::Insertion );
     moether.unregisterMutation( moe::Mutation::Deletion );
@@ -102,10 +102,14 @@ int main()
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;
 
-    std::cout   << "genotype: " << moether.getBestMoe().getGenotype() << "\n"
-                << "fitness: " << moether.getBestMoe().getFitness() << "\n"
+    std::string genotype;
+        for(char c : moether.getBestMoe().genotype)
+            genotype += c;
+
+    std::cout   << "genotype: " << genotype << "\n"
+                << "fitness: " << moether.getBestMoe().fitness << "\n"
                 << "time spent: " << diff.count() << " seconds" << "\n";
 
-    std::cout   << "path = A" << moether.getBestMoe().getGenotype() + "A\n"
-                << "distance = " << std::abs(moether.getBestMoe().getFitness() - 1000) << std::endl;
+    std::cout   << "path = A" << genotype + "A\n"
+                << "distance = " << std::abs(moether.getBestMoe().fitness - 1000) << std::endl;
 }

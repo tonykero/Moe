@@ -9,12 +9,12 @@
 
 int main()
 {
-    Moether<Moe> moether;
-    std::string target = "hello world";
+    Moether<char> moether;
+    std::vector<char> target = {'h','e','l','l','o',' ','w','o','r','l','d'};
 
-    moether.setFitnessFunction( [target](const Moe& moe) -> double
+    moether.setFitnessFunction( [target](const Moe<char>& moe) -> double
     {
-        std::string genotype = moe.getGenotype();
+        std::vector<char> genotype = moe.genotype;
 
         int             dSize   = target.size() - genotype.size();
         unsigned int    min     = std::min(target.size(), genotype.size()),
@@ -27,7 +27,12 @@ int main()
     });
 
     moether.setFitnessMode( false );                // fitness by scoring error
-    moether.setCrossover( moe::Crossover::Uniform );
+    moether.setCrossover( moe::Crossover::TwoPoint );
+
+    std::vector<char> dataset = moe::alphabet;
+    dataset.push_back(' '); // add space
+
+    moether.setDataset(dataset);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -37,7 +42,11 @@ int main()
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;
 
-    std::cout   << "genotype: " << moether.getBestMoe().getGenotype() << "\n"
-                << "fitness: " << moether.getBestMoe().getFitness() << "\n"
+    std::string genotype;
+        for(char c : moether.getBestMoe().genotype)
+            genotype += c;
+
+    std::cout   << "genotype: " << genotype << "\n"
+                << "fitness: " << moether.getBestMoe().fitness << "\n"
                 << "time spent: " << diff.count() << " seconds" << std::endl;
 }

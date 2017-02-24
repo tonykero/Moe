@@ -7,36 +7,50 @@
 
 #include <chrono>
 #include <cstdlib> //atoi
+#include <cstdint>
+
+uint64_t translate(const std::vector<int>& _vec);
 
 int main()
 {
-    Moether<Moe> moether;
+    Moether<int> moether;
 
-    unsigned int n = 2261953600;
+    uint64_t n = 2261953600;
 
-    moether.setFitnessFunction( [n](const Moe& moe) -> double
+    moether.setFitnessFunction( [n](const Moe<int>& moe) -> double
     {
-        std::string genotype = moe.getGenotype();
-        long long gen = atoi(genotype.c_str()); //std::stoul not supported by MinGW :c
-        
-        double error = std::abs((long long)(n - gen*gen));
+        uint64_t genotype = translate(moe.genotype);
+                
+        double error = std::abs(n - genotype*genotype);
 
         return error;
     });
 
     moether.setFitnessMode( false );    // fitness by scoring error
-    moether.setAsciiRange(48, 57);   //only numbers
-    moether.setCrossover( moe::Crossover::TwoPoint );
+    moether.setDataset( moe::numbers );   //only numbers
 
     auto start = std::chrono::high_resolution_clock::now();
 
         moether.init( 400, 80 );
-        moether.run( 1500 );
+        moether.run( 600 );
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;
 
-    std::cout   << "genotype: " << moether.getBestMoe().getGenotype() << "\n"
-                << "fitness: " << moether.getBestMoe().getFitness() << "\n"
-                << "time spent: " << diff.count() << " seconds" << std::endl;
+
+    uint64_t genotype = translate(moether.getBestMoe().genotype);
+
+    std::cout   << "genotype: "     << genotype << "\n"
+                << "fitness: "      << moether.getBestMoe().fitness << "\n"
+                << "time spent: "   << diff.count() << " seconds" << std::endl;
+}
+
+uint64_t translate(const std::vector<int>& _vec)
+{
+    uint64_t value = 0;
+    for( unsigned int i = 0; i < _vec.size(); i++ )
+    {
+        value += std::round(std::pow(10, _vec.size()-i-1)*_vec[i]);
+    }
+    return value;
 }
