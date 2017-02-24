@@ -8,47 +8,52 @@
 #include "Mutations.hpp"
 #include "Crossovers.hpp"
 
-template <typename MoeType>
+namespace moe
+{
+    const std::vector<char> alphabet    = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+    const std::vector<int>  numbers     = {0,1,2,3,4,5,6,7,8,9};
+}
+
+template <typename GenotypeType>
 class Moether
 {
     public:
         Moether ();
         ~Moether();
 
-        void                init   ( unsigned int _moesPerGen, unsigned int _eliteCopies, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
-        void                run    ( unsigned int _generations );
+        void                                init   ( unsigned int _moesPerGen, unsigned int _eliteCopies, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
+        void                                run    ( unsigned int _generations );
 
-        void                setFitnessFunction  ( std::function<double( const MoeType& )> _fitnessFunction );
-        void                setFitnessMode      ( bool _mode);
-        void                setInitGenotypeSize ( unsigned int _size );
+        void                                setFitnessFunction  ( std::function<double( const Moe<GenotypeType>& )> _fitnessFunction );
+        void                                setFitnessMode      ( bool _mode);
+        void                                setInitGenotypeSize ( unsigned int _size );
 
-        void                setCrossover        ( unsigned int _crossoverID );
-        void                setCrossoverEnabled ( bool _crossoverEnabled );
-        void                setMutationEnabled  ( bool _mutationEnabled );
+        void                                setCrossover        ( unsigned int _crossoverID );
+        void                                setCrossoverEnabled ( bool _crossoverEnabled );
+        void                                setMutationEnabled  ( bool _mutationEnabled );
 
-        const bool&         isFitnessMode       () const;
-        const bool&         isCrossoverEnabled  () const;
-        const bool&         isMutationEnabled   () const;
+        const bool&                         isFitnessMode       () const;
+        const bool&                         isCrossoverEnabled  () const;
+        const bool&                         isMutationEnabled   () const;
 
-        void                registerCrossover   ( std::unique_ptr<Crossover>, unsigned int _id);
-        void                registerMutation    ( std::unique_ptr<Mutation> , unsigned int _id);
-        void                unregisterCrossover ( unsigned int _id );
-        void                unregisterMutation  ( unsigned int _id );
+        void                                registerCrossover   ( std::unique_ptr< Crossover<GenotypeType>  >, unsigned int _id);
+        void                                registerMutation    ( std::unique_ptr< Mutation<GenotypeType> > , unsigned int _id);
+        void                                unregisterCrossover ( unsigned int _id );
+        void                                unregisterMutation  ( unsigned int _id );
 
-        void                setAsciiRange       ( unsigned int _a, unsigned int _b );
-        void                setCharset          ( const std::string& _charset );
-        const std::string&  getCharset          () const;
+        void                                setDataset          ( const std::vector<GenotypeType>& _dataset );
+        const std::vector<GenotypeType>&    getDataset          () const;
 
-        const MoeType&      getBestMoe          () const;
+        const Moe<GenotypeType>&        getBestMoe          () const;
 
     private:
         /* private member functions */
-        void                updateKeys          ();
-        std::string         randomizeGenotype   ();
-        void                crossover           ( const MoeType& _parent1, const MoeType& _parent2, MoeType& _offspring1, MoeType& _offspring2 );
-        void                mutate              ( MoeType& _moe );
+        void                                updateKeys          ();
+        std::vector<GenotypeType>           randomizeGenotype   ();
+        void                                crossover           ( const Moe<GenotypeType>& _parent1, const Moe<GenotypeType>& _parent2, Moe<GenotypeType>& _offspring1, Moe<GenotypeType>& _offspring2 );
+        void                                mutate              ( Moe<GenotypeType>& _moe );
 
-        std::function< double( const MoeType& ) > m_fitnessFunction;
+        std::function< double( const Moe<GenotypeType>& ) > m_fitnessFunction;
         // ---
 
         /* standard types */
@@ -66,14 +71,14 @@ class Moether
                         m_isMutationsEnabled = true;
         // ---
 
-        std::unordered_map< unsigned int, std::unique_ptr<Mutation> > m_mutations;
-        std::unordered_map< unsigned int, std::unique_ptr<Crossover>> m_crossovers;
+        std::unordered_map< unsigned int, std::unique_ptr< Mutation<GenotypeType> > > m_mutations;
+        std::unordered_map< unsigned int, std::unique_ptr< Crossover<GenotypeType> >> m_crossovers;
         std::vector<unsigned int> m_keys;
 
-        MoeType         m_bestMoe;
-        std::string     m_charset;
+        Moe<GenotypeType>           m_bestMoe;
+        std::vector<GenotypeType>       m_dataset;
 
-        std::uniform_int_distribution<unsigned int> distrib_charset;
+        std::uniform_int_distribution<unsigned int> distrib_dataset;
         std::default_random_engine gen;
 };
 

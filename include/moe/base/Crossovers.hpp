@@ -17,73 +17,86 @@ namespace Crossover
 }
 }
 
+template <typename GenotypeType>
 class Crossover
 {
     public:
-        Crossover(std::default_random_engine& _generator)
-        :m_generator(_generator)
-        {
+        Crossover(std::default_random_engine& _generator);
 
-        };
-        virtual ~Crossover(){};
+        virtual ~Crossover() = default;
 
-        virtual std::pair<std::string, std::string> cross(const std::string&, const std::string&) const = 0;
+        virtual std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> cross(const std::vector<GenotypeType>&, const std::vector<GenotypeType>&) const = 0;
     
     protected:
         std::default_random_engine& m_generator;
 };
 
-class OnePoint : public Crossover
+template <typename GenotypeType>
+Crossover<GenotypeType>::Crossover(std::default_random_engine& _generator)
+:m_generator(_generator)
+{
+
+}
+
+template <typename GenotypeType>
+class OnePoint : public Crossover<GenotypeType>
 {
     public:
         OnePoint( std::default_random_engine& _generator )
-        :Crossover(_generator)
+        :Crossover<GenotypeType>(_generator)
         {
 
         }
 
-        std::pair<std::string, std::string> cross(const std::string& _genotype1, const std::string& _genotype2) const override
+        std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> cross(const std::vector<GenotypeType>& _genotype1, const std::vector<GenotypeType>& _genotype2) const override
         {
             unsigned int min    = std::min( _genotype1.size(), _genotype2.size() );
             std::uniform_int_distribution<unsigned int> distrib_index(1, min-2);
-            unsigned int index  = distrib_index( m_generator );
+            unsigned int index  = distrib_index( this->m_generator );
 
-            std::pair<std::string, std::string> ret;
-            ret.first   = _genotype1.substr(0, index)
-                        + _genotype2.substr(index, _genotype2.size() - index);
-            ret.second  = _genotype2.substr(0, index)
-                        + _genotype1.substr(index, _genotype1.size() - index);
+            std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> ret;
 
+            ret.first   = _genotype2;
+            ret.second  = _genotype1;
+            for(unsigned int i = 0; i < min; i++)
+            {
+                if(i < index)
+                    ret.first[i] = ret.second[i];
+                else
+                    ret.second[i] =  ret.first[i];
+            }
+            
             return ret;
         }
 };
 
-class TwoPoint : public Crossover
+template <typename GenotypeType>
+class TwoPoint : public Crossover<GenotypeType>
 {
     public:
         TwoPoint( std::default_random_engine& _generator )
-        :Crossover(_generator)
+        :Crossover<GenotypeType>(_generator)
         {
 
         }
 
-        std::pair<std::string, std::string> cross(const std::string& _genotype1, const std::string& _genotype2) const override
+        std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> cross(const std::vector<GenotypeType>& _genotype1, const std::vector<GenotypeType>& _genotype2) const override
         {
             std::uniform_int_distribution<unsigned int> distrib_index;
             unsigned int min    = std::min( _genotype1.size(), _genotype2.size() );
 
             distrib_index       = std::uniform_int_distribution<unsigned int>(min*0.05f, min*0.45f);
-            unsigned int index1 = distrib_index( m_generator );
+            unsigned int index1 = distrib_index( this->m_generator );
             distrib_index       = std::uniform_int_distribution<unsigned int>(min*0.55f, min*0.95f);
-            unsigned int index2 = distrib_index( m_generator );
+            unsigned int index2 = distrib_index( this->m_generator );
 
-            std::pair<std::string, std::string> ret;
+            std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> ret;
             ret.first   = _genotype1;
             ret.second  = _genotype2;
 
             for(unsigned int i = index1; i < index2; i++)
             {
-                char cs = ret.first[i];
+                GenotypeType cs = ret.first[i];
                 ret.first[i] = ret.second[i];
                 ret.second[i] = cs;
             }
@@ -91,29 +104,30 @@ class TwoPoint : public Crossover
         }
 };
 
-class Uniform : public Crossover
+template <typename GenotypeType>
+class Uniform : public Crossover<GenotypeType>
 {
     public:
         Uniform( std::default_random_engine& _generator, float& _crossoverRate)
-        :Crossover(_generator), m_crossoverRate(_crossoverRate)
+        :Crossover<GenotypeType>(_generator), m_crossoverRate(_crossoverRate)
         {
 
         }
 
-        std::pair<std::string, std::string> cross(const std::string& _genotype1, const std::string& _genotype2) const override
+        std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> cross(const std::vector<GenotypeType>& _genotype1, const std::vector<GenotypeType>& _genotype2) const override
         {
             std::bernoulli_distribution distrib_uniform(m_crossoverRate);
             unsigned int min = std::min( _genotype1.size(), _genotype2.size() );
             
-            std::pair<std::string, std::string> ret;
+            std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> ret;
             ret.first   = _genotype1;
             ret.second  = _genotype2;
 
             for(unsigned int i = 0; i < min; i++)
             {
-                if(distrib_uniform( m_generator ))
+                if(distrib_uniform( this->m_generator ))
                 {
-                    char cs = ret.first[i];
+                    GenotypeType cs = ret.first[i];
                     ret.first[i] = ret.second[i];
                     ret.second[i] = cs;
                 }

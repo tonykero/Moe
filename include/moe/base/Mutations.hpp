@@ -18,109 +18,117 @@ namespace Mutation
 }
 }
 
+template <typename GenotypeType>
 class Mutation
 {
     public:
-        Mutation(std::default_random_engine& _generator)
-        :m_generator(_generator)
-        {
-
-        }
+        Mutation(std::default_random_engine& _generator);
         
-        virtual ~Mutation(){};
+        virtual ~Mutation() = default;
 
-        virtual std::string mutate ( const std::string& _moeGenotype, const std::string& _charset ) const = 0;
+        virtual std::vector<GenotypeType> mutate ( const std::vector<GenotypeType>& _moeGenotype, const std::vector<GenotypeType>& _dataset ) const = 0;
     
     protected:
         std::default_random_engine& m_generator;
 };
 
-class Substitution : public Mutation
+template <typename GenotypeType>
+Mutation<GenotypeType>::Mutation(std::default_random_engine& _generator)
+:m_generator(_generator)
+{
+
+}
+
+template <typename GenotypeType>
+class Substitution : public Mutation<GenotypeType>
 {
     public:
         Substitution( std::default_random_engine& _generator )
-        :Mutation(_generator)
+        :Mutation<GenotypeType>(_generator)
         {
 
         }
 
-        std::string mutate( const std::string& _moeGenotype, const std::string& _charset ) const override
+        std::vector<GenotypeType> mutate ( const std::vector<GenotypeType>& _moeGenotype, const std::vector<GenotypeType>& _dataset ) const override
         {
-            std::string moe_genotype = _moeGenotype;
-            std::uniform_int_distribution<unsigned int> distrib(0, _charset.size()-1);
+            std::vector<GenotypeType> moe_genotype = _moeGenotype;
+            std::uniform_int_distribution<unsigned int> distrib(0, _dataset.size()-1);
 
-            char mutation = _charset[ distrib( m_generator ) ];
+            GenotypeType mutation = _dataset[ distrib( this->m_generator ) ];
             
             distrib = std::uniform_int_distribution<unsigned int>(0, moe_genotype.size()-1);
-            moe_genotype[ distrib( m_generator ) ] = mutation;
+            moe_genotype[ distrib( this->m_generator ) ] = mutation;
 
             return moe_genotype;
         }
 };
 
-class Insertion : public Mutation
+template <typename GenotypeType>
+class Insertion : public Mutation<GenotypeType>
 {
     public:
         Insertion( std::default_random_engine& _generator )
-        :Mutation(_generator)
+        :Mutation<GenotypeType>(_generator)
         {
 
         }
 
-        std::string mutate( const std::string& _moeGenotype, const std::string& _charset ) const override
+        std::vector<GenotypeType> mutate ( const std::vector<GenotypeType>& _moeGenotype, const std::vector<GenotypeType>& _dataset ) const override
         {
-            std::string moe_genotype = _moeGenotype;
-            std::uniform_int_distribution<unsigned int> distrib(0, _charset.size()-1);
+            std::vector<GenotypeType> moe_genotype = _moeGenotype;
+            std::uniform_int_distribution<unsigned int> distrib(0, _dataset.size()-1);
 
-            char mutation = _charset[ distrib( m_generator ) ];
+            GenotypeType mutation = _dataset[ distrib( this->m_generator ) ];
 
             distrib = std::uniform_int_distribution<unsigned int>(0, moe_genotype.size()-1);
-            moe_genotype.insert( moe_genotype.begin() + distrib( m_generator ), mutation );
+            moe_genotype.insert( moe_genotype.begin() + distrib( this->m_generator ), mutation );
 
             return moe_genotype;
         }
 };
 
-class Deletion : public Mutation
+template <typename GenotypeType>
+class Deletion : public Mutation<GenotypeType>
 {
     public:
         Deletion( std::default_random_engine& _generator )
-        :Mutation(_generator)
+        :Mutation<GenotypeType>(_generator)
         {
 
         }
 
-        std::string mutate( const std::string& _moeGenotype, const std::string& _charset ) const override
+        std::vector<GenotypeType> mutate ( const std::vector<GenotypeType>& _moeGenotype, const std::vector<GenotypeType>& _dataset ) const override
         {
-            std::string moe_genotype = _moeGenotype;
+            std::vector<GenotypeType> moe_genotype = _moeGenotype;
             if( moe_genotype.size() > 1 )
             {
                 std::uniform_int_distribution<unsigned int> distrib(0, moe_genotype.size()-1);
 
-                moe_genotype.erase( moe_genotype.begin() + distrib( m_generator ));
+                moe_genotype.erase( moe_genotype.begin() + distrib( this->m_generator ));
             }
 
             return moe_genotype;
         }
 };
 
-class Translocation : public Mutation
+template <typename GenotypeType>
+class Translocation : public Mutation<GenotypeType>
 {
     public:
         Translocation( std::default_random_engine& _generator )
-        :Mutation(_generator)
+        :Mutation<GenotypeType>(_generator)
         {
 
         }
         
-        std::string mutate( const std::string& _moeGenotype, const std::string& _charset ) const override
+        std::vector<GenotypeType> mutate ( const std::vector<GenotypeType>& _moeGenotype, const std::vector<GenotypeType>& _dataset ) const override
         {
-            std::string moe_genotype = _moeGenotype;
+            std::vector<GenotypeType> moe_genotype = _moeGenotype;
             std::uniform_int_distribution<unsigned int> distrib(0, moe_genotype.size()-1);
 
-            unsigned int    a = distrib( m_generator ),
-                            b = distrib( m_generator );
-            char tmp = moe_genotype[a];
+            unsigned int    a = distrib( this->m_generator ),
+                            b = distrib( this->m_generator );
+            GenotypeType tmp = moe_genotype[a];
             moe_genotype[a] = moe_genotype[b];
             moe_genotype[b] = tmp;
 
