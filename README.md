@@ -5,7 +5,7 @@ GCC 4.9+/Clang 3.6+ (Linux) | MSVC 19.0 (Win 32/64)
 
 [![license](https://img.shields.io/github/license/tonykero/Moe.svg?style=flat-square)](https://github.com/tonykero/Moe/blob/master/LICENSE)
 
-Moe is a cross-platform C++14 dependency-free [ implementation / framework ] of a Generic Genetic Algorithm
+Moe is a C++14 header-only dependency-free [ implementation / framework ] of a Generic Genetic Algorithm
 
 ## Quick Overview
 
@@ -25,9 +25,9 @@ Let's take a look at a base sample using Moe:
 
 int main()
 {
-    Moether<Moe> moether;
+    Moether< /* basic type of the genotype */ > moether;
 
-    moether.setFitnessFunction( [](const Moe& moe) -> double
+    moether.setFitnessFunction( [](const Moe< /* repeat template paramater here */ >& moe) -> double
     {
         double fitness = 0.0;
         
@@ -42,8 +42,8 @@ int main()
     });
 
     // you can define custom Mutation or Crossover with the 2 following functions
-    moether.registerCrossover( /* std::unique_ptr<Crossover> */ );  // when registering a crossover, it selects it
-    moether.registerMutation( /* std::unique_ptr<Mutation> */ );
+    moether.registerCrossover( /* std::unique_ptr<Crossover< /* genotype basic type */ > > */ );  // when registering a crossover, it selects it
+    moether.registerMutation( /* std::unique_ptr<Mutation< /* genotype basic type */ > > */ );
 
     // you can unregister Mutations & Crossovers even those by default
     moether.unregisterCrossover( /* unsigned int id */ ); // only relevant for custom-defined crossover
@@ -60,12 +60,8 @@ int main()
     moether.setMutationEnabled( /* bool */ );   // default: true
     
     // a charset is used to modify genotype of moes
-
-    moether.setAsciiRange( /* uint a */, /* uint b*/ ); // to use a custom charset by setting a range in the ascii table
-    //default: 32, 255
     
-    // an other function to modify the charset:
-    moether.setCharset( /* std::string */ ); // to use an explicitly defined charset
+    moether.setDataset( /* std::vector< /* genotype basic type */ > */ ); // 
 
     moether.init( /* moes per generation */ , /* elite copies */, /* mutation rate */, /* crossover rate */);
     // those 2 last paramaters are optional and set to 0.1 and 0.5 respectively
@@ -76,7 +72,7 @@ int main()
     // then lastly you retrieve the best element
     Moe best_moe = moether.getBestMoe();
 
-    // now you can retrieve stuff best_moe.getGenotype() & best_moe.getFitness()
+    // now you can retrieve stuff best_moe.genotype & best_moe.fitness
 }
 ```
 
@@ -123,7 +119,6 @@ Moe uses CMake, options are available:
 
 Options         | Description                   | Default Value |
 --------------- | ----------------------------- | ------------- |
-BUILD_SHARED    | builds Moe as SHARED if ON    | OFF           |
 BUILD_EXAMPLES  | build examples                | ON            |
 DEBUG           | Enable debugging symbols      | OFF           |
 
@@ -149,10 +144,7 @@ git clone https://github.com/tonykero/Moe.git
 cd Moe
 mkdir build && cd build && cmake .. && cmake --build .
 ```
-builds Moe as STATIC with examples
-
-> NOTE: with msvc `cmake --build .` becomes `cmake --build . --config Release` (or Debug)
-> > known issue: building Moe as a shared library with msvc fails
+builds Moe with examples
 
 ## License
 
