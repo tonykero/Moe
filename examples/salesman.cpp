@@ -5,6 +5,7 @@
     #include <string> // needed with MSVC 19.0 for overloaded << on std::string
 #endif
 
+#include <algorithm>
 #include <chrono>
 #include <unordered_map>
 
