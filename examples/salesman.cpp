@@ -8,28 +8,14 @@
 #include <chrono>
 #include <unordered_map>
 
-void remove_duplicates(std::vector<char> &str)
-{
-    std::vector<char> unique;
-    unique.push_back(str[0]);
-    for(unsigned int i = 1; i < str.size(); i++)
-    {
-        bool found = false;
-        for(unsigned int j = 0; j < unique.size(); j++)
-        {
-            if(str[i] == unique[j])
-                found = true;
-        }
-        if(found == false)
-            unique.push_back(str[i]);
-    }
-    str = unique;
-}
+void remove_duplicates(std::vector<char> &str);
 
 int main()
 {
     Moether<char> moether;
     
+    // we create a 5-node graph, or 5 city map
+    // as described here: http://computing.dcu.ie/~humphrys/Notes/Morelli.images/2a.gif
     std::unordered_map< std::string, unsigned int > distances;
     distances["AB"] = 100;
     distances["AC"] = 300;
@@ -59,19 +45,20 @@ int main()
     moether.setFitnessFunction( [&distances](const Moe<char>& moe) -> double
     {
         std::vector<char> genotype = moe.genotype;
-
         unsigned int fitness = 0;
 
+        // we first validate the genotype by checking if is has any duplicates
+        // if it has any, it would mean that we travel multiples time to the same city/node
         std::vector<char> test_string = genotype;
         remove_duplicates(test_string);
 
         if( test_string.size() == genotype.size() && genotype.size() == 4 )
         {
-
             int error = -1000;
             genotype.insert(genotype.begin(), 'A');
             genotype.push_back('A');
 
+            // we process endpoints by pair
             while( genotype.size() >= 2 )
             {
                 std::string pair = "";
@@ -82,15 +69,16 @@ int main()
                 
                 genotype.erase( genotype.begin() );
             }
-            fitness += -error;
+            fitness += -error; // error is the distance traveled
         }
-        
         return fitness;
     });
 
     moether.setInitGenotypeSize( 4 );
     moether.setDataset( {'B', 'C', 'D', 'E'} );
     moether.setCrossover( moe::Crossover::Uniform );
+
+    // i know that the solution must be 4-character long, so i remove Mutations which can modify the size
     moether.unregisterMutation( moe::Mutation::Insertion );
     moether.unregisterMutation( moe::Mutation::Deletion );
 
@@ -112,4 +100,18 @@ int main()
 
     std::cout   << "path = A" << genotype + "A\n"
                 << "distance = " << std::abs(moether.getBestMoe().fitness - 1000) << std::endl;
+}
+
+void remove_duplicates(std::vector<char> &str)
+{
+    std::vector<char> unique;
+    std::vector<char>::iterator it;
+    unique.push_back(str[0]);
+    for(unsigned int i = 1; i < str.size(); i++)
+    {
+        it = std::find(unique.begin(), unique.end(), str[i]);
+        if( it == unique.end() )
+            unique.push_back(str[i]);
+    }
+    str = unique;
 }
