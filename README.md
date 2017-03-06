@@ -25,9 +25,9 @@ Let's take a look at a base sample using Moe:
 
 int main()
 {
-    Moether< /* basic type of the genotype */ > moether;
+    Moether< Basic GenotypeType > moether;
 
-    moether.setFitnessFunction( [](const Moe< /* repeat template paramater here */ >& moe) -> double
+    moether.setFitnessFunction( [](const Moe< Basic GenotypeType >& moe) -> double
     {
         double fitness = 0.0;
         
@@ -35,19 +35,18 @@ int main()
         
         // by calculating error and returning 1/error for example
         // or even returning error and then use moether.setFitnessMode( false );
-        // this will inverse the order, and will jugdge moes not by their fitness
-        // but by their non-fitness
+        // this will sort moes by descending order
         
         return fitness;
     });
 
     // you can define custom Mutation or Crossover with the 2 following functions
-    moether.registerCrossover( /* std::unique_ptr<Crossover< /* genotype basic type */ > > */ );  // when registering a crossover, it selects it
-    moether.registerMutation( /* std::unique_ptr<Mutation< /* genotype basic type */ > > */ );
+    moether.registerCrossover( std::unique_ptr<Crossover< Basic GenotypeType > > );  // registering a crossover selects it
+    moether.registerMutation( std::unique_ptr<Mutation< Basic GenotypeType > > );
 
     // you can unregister Mutations & Crossovers even those by default
-    moether.unregisterCrossover( /* unsigned int id */ ); // only relevant for custom-defined crossover
-    moether.unregisterMutation( /* unsigned int id */ );
+    moether.unregisterCrossover( unsigned int id ); // only relevant for custom-defined crossover
+    moether.unregisterMutation( unsigned int id );
     // examples/salesman.cpp uses unregisterMutation()
 
     moether.setCrossover( /* Crossover ids */ ); // default: moe::Crossover::OnePoint
@@ -59,13 +58,12 @@ int main()
     moether.setCrossoverEnabled( /* bool */ );  // default: true
     moether.setMutationEnabled( /* bool */ );   // default: true
     
-    // a charset is used to modify genotype of moes
-    
-    moether.setDataset( /* std::vector< /* genotype basic type */ > */ ); // 
+    // a dataset is used to modify genotype of moes
+    moether.setDataset( std::vector< genotype basic type > );
 
-    moether.init( /* moes per generation */ , /* elite copies */, /* mutation rate */, /* crossover rate */);
-    // those 2 last paramaters are optional and set to 0.1 and 0.5 respectively
-    // crossover rate only affects Uniform Crossover
+    moether.init( /* moes per generation */ , /* elite copies */, /* mutation rate */, /* crossover rate */ );
+    // mutation rate (optional): default: 0.1
+    // crossover rate(optional): default: 0.5 (applies only on Uniform crossover)
 
     moether.run( /* number of generations */ );
 
