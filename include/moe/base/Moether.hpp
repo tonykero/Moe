@@ -3,6 +3,7 @@
 #include <random>
 #include <memory>
 #include <unordered_map>
+#include <functional>
 
 #include "Moe.hpp"
 #include "Mutations.hpp"
@@ -11,7 +12,7 @@
 namespace moe
 {
     const std::vector<char> alphabet    = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-    const std::vector<int>  numbers     = {0,1,2,3,4,5,6,7,8,9};
+    const std::vector<int> numbers      = {0,1,2,3,4,5,6,7,8,9};
 }
 
 template <typename GenotypeType>
@@ -44,7 +45,7 @@ class Moether
         void                                setDataset          ( const std::vector<GenotypeType>& _dataset );
         const std::vector<GenotypeType>&    getDataset          () const;
 
-        const Moe<GenotypeType>&        getBestMoe          () const;
+        const Moe<GenotypeType>&            getBestMoe          () const;
 
     private:
         /* private member functions */
@@ -76,7 +77,7 @@ class Moether
         std::vector<unsigned int> m_keys;
 
         Moe<GenotypeType>           m_bestMoe;
-        std::vector<GenotypeType>       m_dataset;
+        std::vector<GenotypeType>   m_dataset;
 
         std::uniform_int_distribution<unsigned int> distrib_dataset;
         std::default_random_engine gen;

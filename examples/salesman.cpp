@@ -1,12 +1,12 @@
 #include <moe/moe.hpp>
 #include <iostream>
+#include <chrono>
 
 #ifdef _MSC_VER
     #include <string> // needed with MSVC 19.0 for overloaded << on std::string
 #endif
 
 #include <algorithm>
-#include <chrono>
 #include <unordered_map>
 
 void remove_duplicates(std::vector<char> &str);
@@ -53,7 +53,7 @@ int main()
         std::vector<char> test_string = genotype;
         remove_duplicates(test_string);
 
-        if( test_string.size() == genotype.size() && genotype.size() == 4 )
+        if( test_string.size() == 4 )
         {
             int error = -1000;
             genotype.insert(genotype.begin(), 'A');
@@ -91,9 +91,11 @@ int main()
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;
 
+    // converts std::vector<char> to std::string
     std::string genotype;
         for(char c : moether.getBestMoe().genotype)
             genotype += c;
+    //
 
     std::cout   << "genotype: " << genotype << "\n"
                 << "fitness: " << moether.getBestMoe().fitness << "\n"

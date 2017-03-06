@@ -1,11 +1,10 @@
 #include <moe/moe.hpp>
 #include <iostream>
+#include <chrono>
 
 #ifdef _MSC_VER
     #include <string> // needed with MSVC 19.0 for overloaded << on std::string
 #endif
-
-#include <chrono>
 
 int main()
 {

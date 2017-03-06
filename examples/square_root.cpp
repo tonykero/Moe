@@ -1,11 +1,10 @@
 #include <moe/moe.hpp>
 #include <iostream>
+#include <chrono>
 
 #ifdef _MSC_VER
     #include <string> // needed with MSVC 19.0 for overloaded << on std::string
 #endif
-
-#include <chrono>
 
 long long translate(const std::vector<int>& _vec);
 
@@ -46,9 +45,9 @@ int main()
 long long translate(const std::vector<int>& _vec)
 {
     long long value = 0;
+    
     for( unsigned int i = 0; i < _vec.size(); i++ )
-    {
         value += std::round(std::pow(10, _vec.size()-i-1)*_vec[i]);
-    }
+    
     return value;
 }
