@@ -43,7 +43,7 @@ int main()
     distances["EC"] = distances["CE"];
     distances["ED"] = distances["DE"];
 
-    moether.setFitnessFunction( [&distances](const Moe<char>& moe) -> double
+    moether.setFitnessFunction( [&distances](auto moe) -> double
     {
         std::vector<char> genotype = moe.genotype;
         unsigned int fitness = 0;
@@ -70,14 +70,14 @@ int main()
                 
                 genotype.erase( genotype.begin() );
             }
-            fitness += -error; // error is the distance traveled
+            fitness -= error; // error is the distance traveled
         }
         return fitness;
     });
 
     moether.setInitGenotypeSize( 4 );
     moether.setDataset( {'B', 'C', 'D', 'E'} );
-    moether.setCrossover( moe::Crossover::Uniform );
+    moether.setCrossover( moe::Crossover::Uniform);
 
     // i know that the solution must be 4-character long, so i remove Mutations which can modify the size
     moether.unregisterMutation( moe::Mutation::Insertion );

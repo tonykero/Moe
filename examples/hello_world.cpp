@@ -11,7 +11,7 @@ int main()
     Moether<char> moether; // char will be the Base Type for genotype creations
     std::vector<char> target = {'h','e','l','l','o',' ','w','o','r','l','d'};
 
-    moether.setFitnessFunction( [target](const Moe<char>& moe) -> double
+    moether.setFitnessFunction( [target](auto moe) -> double
     {
         std::vector<char> genotype = moe.genotype;
 
@@ -26,11 +26,9 @@ int main()
     });
 
     moether.setFitnessMode( false ); // fitness by scoring error
-    moether.setCrossover( moe::Crossover::TwoPoint );
 
-    std::vector<char> dataset = moe::alphabet;
+    auto dataset = moe::util::getAlphabet<char>();
     dataset.push_back(' '); // add space
-
     moether.setDataset(dataset);
 
     auto start = std::chrono::high_resolution_clock::now();

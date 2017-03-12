@@ -14,7 +14,7 @@ int main()
 
     long long n = 2261953600;
 
-    moether.setFitnessFunction( [n](const Moe<int>& moe) -> double
+    moether.setFitnessFunction( [n](auto moe) -> double
     {
         long long genotype = translate(moe.genotype);
                 
@@ -24,7 +24,7 @@ int main()
     });
 
     moether.setFitnessMode( false );    // fitness by scoring error
-    moether.setDataset( moe::numbers );   //only numbers
+    moether.setDataset( moe::util::getDigits<int>() );   //only numbers
 
     auto start = std::chrono::high_resolution_clock::now();
 
