@@ -58,13 +58,8 @@ class OnePoint : public Crossover<GenotypeType>
 
             ret.first   = _genotype2;
             ret.second  = _genotype1;
-            for(unsigned int i = 0; i < min; i++)
-            {
-                if(i < index)
-                    ret.first[i] = ret.second[i];
-                else
-                    ret.second[i] =  ret.first[i];
-            }
+            for(unsigned int i = 0; i < index; i++)
+                std::swap(ret.first[i], ret.second[i]);
             
             return ret;
         }
@@ -95,11 +90,8 @@ class TwoPoint : public Crossover<GenotypeType>
             ret.second  = _genotype2;
 
             for(unsigned int i = index1; i < index2; i++)
-            {
-                GenotypeType cs = ret.first[i];
-                ret.first[i] = ret.second[i];
-                ret.second[i] = cs;
-            }
+                std::swap(ret.first[i], ret.second[i]);
+                
             return ret;
         }
 };
@@ -126,11 +118,7 @@ class Uniform : public Crossover<GenotypeType>
             for(unsigned int i = 0; i < min; i++)
             {
                 if(distrib_uniform( this->m_generator ))
-                {
-                    GenotypeType cs = ret.first[i];
-                    ret.first[i] = ret.second[i];
-                    ret.second[i] = cs;
-                }
+                    std::swap(ret.first[i], ret.second[i]);
             }
             return ret;
         }
