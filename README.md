@@ -1,11 +1,11 @@
 # Moe
 GCC 4.9+/Clang 3.6+ (Linux) | MSVC 19.0 (Win 32/64)
 --- | ---
-[![Travis branch](https://img.shields.io/travis/tonykero/Moe/master.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe) | [![AppVeyor branch](https://img.shields.io/appveyor/ci/tonykero/Moe/master.svg?style=flat-square)](https://ci.appveyor.com/project/tonykero/moe)
+[![Travis branch](https://img.shields.io/travis/tonykero/Moe/feature/algorithms.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe) | [![AppVeyor branch](https://img.shields.io/appveyor/ci/tonykero/Moe/feature/algorithms.svg?style=flat-square)](https://ci.appveyor.com/project/tonykero/moe)
 
 [![license](https://img.shields.io/github/license/tonykero/Moe.svg?style=flat-square)](https://github.com/tonykero/Moe/blob/master/LICENSE)
 
-Moe is a C++14 header-only dependency-free [ implementation / framework ] of a Generic Genetic Algorithm
+Moe is a C++14 header-only dependency-free library providing generic implementations of some metaheuristic algorithms
 
 ## Quick Overview
 
@@ -14,70 +14,57 @@ from any complexity with C++.
 
 Moe stands for Maybe Overpowered Entity, but isn't limited to it.
 
-Moe gives a way for the user to completely define the behavior of the Genetic Algorithm, all parameters are
+Moe gives a way for the user to completely define the behavior of algorithms, all parameters are
 adjustable, Mutations & Crossovers can be defined and added to Moether in addition to those given by default.
 
-Let's take a look at a base sample using Moe:
+Take a look at a base sample using Moe ([examples/hello_world.cpp](https://github.com/tonykero/Moe/blob/master/examples/hello_world.cpp)):
 
 ```cpp
-#include <moe/moe.hpp> // base header to include the Moe library
+#include <moe/moe.hpp>
 #include <iostream>
+#include <string>
 
 int main()
 {
-    Moether< Basic GenotypeType > moether;
+    GeneticAlgorithm<char> moether(200, 100); // char will be the Base Type for genotype creations
+    std::vector<char> target = {'h','e','l','l','o',' ','w','o','r','l','d'};
 
-    moether.setFitnessFunction( [](const Moe< Basic GenotypeType >& moe) -> double
+    moether.setFitnessFunction( [target](auto moe) -> double
     {
-        double fitness = 0.0;
+        std::vector<char> genotype = moe.genotype;
+
+        int             dSize   = target.size() - genotype.size(); // get difference of number of characters
+        unsigned int    min     = std::min(target.size(), genotype.size());
+        double          error   = std::abs(dSize) * 256; // add 256 error points for each extra or lack of char
+
+        for(unsigned int i = 0; i < min; i++)
+            error += std::abs( genotype[i] - target[i] ); // each difference of character is added to error score
         
-        /* increment fitness as moe's fitness grows */
-        
-        // by calculating error and returning 1/error for example
-        // or even returning error and then use moether.setFitnessMode( false );
-        // this will sort moes by descending order
-        
-        return fitness;
+        return 1/(error+1);
     });
 
-    // you can define custom Mutation or Crossover with the 2 following functions
-    moether.registerCrossover( std::unique_ptr<Crossover< Basic GenotypeType > > );  // registering a crossover selects it
-    moether.registerMutation( std::unique_ptr<Mutation< Basic GenotypeType > > );
+    auto dataset = moe::util::getAlphabet<char>();
+    dataset.push_back(' '); // add space
+    moether.setDataset(dataset);
 
-    // you can unregister Mutations & Crossovers even those by default
-    moether.unregisterCrossover( unsigned int id ); // only relevant for custom-defined crossover
-    moether.unregisterMutation( unsigned int id );
-    // examples/salesman.cpp uses unregisterMutation()
+    moether.run( 1500 );
 
-    moether.setCrossover( /* Crossover ids */ ); // default: moe::Crossover::OnePoint
-    // default crossover ids are:
-    // moe::Crossover::OnePoint (= 0)
-    // moe::Crossover::TwoPoint (= 1)
-    // moe::Crossover::Uniform  (= 2)
-
-    moether.setCrossoverEnabled( /* bool */ );  // default: true
-    moether.setMutationEnabled( /* bool */ );   // default: true
+    // converts std::vector<char> to std::string
+    std::string genotype;
+        for(char c : moether.getBestMoe().genotype)
+            genotype += c;
+    //
     
-    // a dataset is used to modify genotype of moes
-    moether.setDataset( std::vector< genotype basic type > );
-
-    moether.init( /* moes per generation */ , /* elite copies */, /* mutation rate */, /* crossover rate */ );
-    // mutation rate (optional): default: 0.1
-    // crossover rate(optional): default: 0.5 (applies only on Uniform crossover)
-
-    moether.run( /* number of generations */ );
-
-    // then lastly you retrieve the best element
-    Moe best_moe = moether.getBestMoe();
-
-    // now you can retrieve stuff best_moe.genotype & best_moe.fitness
+    std::cout   << "genotype: " << genotype << "\n"
+                << "fitness: " << moether.getBestMoe().fitness << std::endl;
 }
+
 ```
 
 To understand how registering Mutations and Crossovers works check files 
 [Mutations.hpp](https://github.com/tonykero/Moe/blob/master/include/moe/base/Mutations.hpp)
 & [Crossovers.hpp](https://github.com/tonykero/Moe/blob/master/include/moe/base/Crossovers.hpp)
-and [Moether_defs.hpp Line 7 - 13](https://github.com/tonykero/Moe/blob/master/include/moe/base/Moether_defs.hpp#L7)
+and [AlgorithmImpl.hpp Line 7 - 13](https://github.com/tonykero/Moe/blob/master/include/moe/base/algorithms/AlgorithmImpl.hpp#L77)
 
 ### Examples
 
@@ -87,29 +74,27 @@ Examples can be found [here](https://github.com/tonykero/Moe/tree/master/example
 
 Moe contains the following features:
 
+* Algorithms:
+    * Genetic Algorithm
+    * + Abstract Class
+
 * Crossovers:
     * One Point
     * Two Point
     * Uniform
-    * User-defined
 
 * Mutations:
     * Substitution
     * Insertion
     * Deletion
     * Translocation
-    * User-defined
 
-* Elitism
-
-* Genetic Representation:
-    * Explicit representation
-    * User-defined
-
-* Performance:
-    * Parallel Implementation ( not yet )
-
-* Adaptive GA Variant ( not yet )
+* Planned:
+    * Performance:
+        * Parallel Implementation
+    * Algorithms:
+        * Differential Evolution
+        * Particle Swarm Optimization
 
 ## Building
 
