@@ -8,7 +8,7 @@
 
 int main()
 {
-    Moether<char> moether; // char will be the Base Type for genotype creations
+    GeneticAlgorithm<char> moether(200, 100); // char will be the Base Type for genotype creations
     std::vector<char> target = {'h','e','l','l','o',' ','w','o','r','l','d'};
 
     moether.setFitnessFunction( [target](auto moe) -> double
@@ -16,25 +16,22 @@ int main()
         std::vector<char> genotype = moe.genotype;
 
         int             dSize   = target.size() - genotype.size(); // get difference of number of characters
-        unsigned int    min     = std::min(target.size(), genotype.size()),
-                        error   = std::abs(dSize) * 256; // add 256 error points for each extra or lack of char
+        unsigned int    min     = std::min(target.size(), genotype.size());
+        double          error   = std::abs(dSize) * 256; // add 256 error points for each extra or lack of char
 
         for(unsigned int i = 0; i < min; i++)
             error += std::abs( genotype[i] - target[i] ); // each difference of character is added to error score
         
-        return error;
+        return 1/(error+1);
     });
-
-    moether.setFitnessMode( false ); // fitness by scoring error
 
     auto dataset = moe::util::getAlphabet<char>();
     dataset.push_back(' '); // add space
     moether.setDataset(dataset);
 
     auto start = std::chrono::high_resolution_clock::now();
-
-        moether.init( 200 , 100 ); // 200 moes per generation, 100 elite copies, 10 % mutation, 50% crossover(uniform)
-        moether.run( 1500 );
+    
+    moether.run( 1500 );
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;

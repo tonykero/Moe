@@ -10,7 +10,7 @@ long long translate(const std::vector<int>& _vec);
 
 int main()
 {
-    Moether<int> moether;
+    GeneticAlgorithm<int> moether(400, 80);
 
     long long n = 2261953600;
 
@@ -20,15 +20,13 @@ int main()
                 
         double error = std::abs(n - genotype*genotype);
 
-        return error;
+        return 1/(error+1);
     });
 
-    moether.setFitnessMode( false );    // fitness by scoring error
     moether.setDataset( moe::util::getDigits<int>() );   //only numbers
 
     auto start = std::chrono::high_resolution_clock::now();
-
-        moether.init( 400, 80 );
+    
         moether.run( 600 );
 
     auto end = std::chrono::high_resolution_clock::now();

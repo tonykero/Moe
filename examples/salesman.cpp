@@ -13,7 +13,7 @@ void remove_duplicates(std::vector<char> &str);
 
 int main()
 {
-    Moether<char> moether;
+    GeneticAlgorithm<char> moether(30, 5);
     
     // we create a 5-node graph, or 5 city map
     // as described here: http://computing.dcu.ie/~humphrys/Notes/Morelli.images/2a.gif
@@ -75,17 +75,11 @@ int main()
         return fitness;
     });
 
-    moether.setInitGenotypeSize( 4 );
+    moether.setFixedSize( 4 );
     moether.setDataset( {'B', 'C', 'D', 'E'} );
     moether.setCrossover( moe::Crossover::Uniform);
 
-    // i know that the solution must be 4-character long, so i remove Mutations which can modify the size
-    moether.unregisterMutation( moe::Mutation::Insertion );
-    moether.unregisterMutation( moe::Mutation::Deletion );
-
     auto start = std::chrono::high_resolution_clock::now();
-
-        moether.init( 30 , 5 );
         moether.run( 100 );
 
     auto end = std::chrono::high_resolution_clock::now();
