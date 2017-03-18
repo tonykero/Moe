@@ -6,46 +6,32 @@
     #include <string> // needed with MSVC 19.0 for overloaded << on std::string
 #endif
 
-long long translate(const std::vector<int>& _vec);
-
 int main()
 {
-    GeneticAlgorithm<int> moether(400, 80);
+    DifferentialEvolution<int> moether(20);
 
     long long n = 2261953600;
 
     moether.setFitnessFunction( [n](auto moe) -> double
     {
-        long long genotype = translate(moe.genotype);
+        long long genotype = moe.genotype[0];
                 
         double error = std::abs(n - genotype*genotype);
 
         return 1/(error+1);
     });
 
-    moether.setDataset( moe::util::getDigits<int>() );   //only numbers
-
     auto start = std::chrono::high_resolution_clock::now();
     
-        moether.run( 600 );
+        moether.run( 50 );
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;
 
 
-    long long genotype = translate(moether.getBestMoe().genotype);
+    long long genotype = moether.getBestMoe().genotype[0];
 
     std::cout   << "genotype: "     << genotype << "\n"
                 << "fitness: "      << moether.getBestMoe().fitness << "\n"
                 << "time spent: "   << diff.count() << " seconds" << std::endl;
-}
-
-long long translate(const std::vector<int>& _vec)
-{
-    long long value = 0;
-    
-    for( unsigned int i = 0; i < _vec.size(); i++ )
-        value += std::round(std::pow(10, _vec.size()-i-1)*_vec[i]);
-    
-    return value;
 }
