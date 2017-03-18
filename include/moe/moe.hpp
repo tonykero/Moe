@@ -6,4 +6,4 @@
 
 #include "base/util.hpp"
 #include "base/algorithms/GeneticAlgorithm.hpp" // Moe.hpp, Mutations.hpp, Crossovers.hpp
-
+#include "base/algorithms/DifferentialEvolution.hpp"
