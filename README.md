@@ -1,7 +1,7 @@
 # Moe
 GCC 4.9+/Clang 3.6+ (Linux) | MSVC 19.0 (Win 32/64)
 --- | ---
-[![Travis branch](https://img.shields.io/travis/tonykero/Moe/feature/algorithms.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe) | [![AppVeyor branch](https://img.shields.io/appveyor/ci/tonykero/Moe/feature/algorithms.svg?style=flat-square)](https://ci.appveyor.com/project/tonykero/moe)
+[![Travis branch](https://img.shields.io/travis/tonykero/Moe/master.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe) | [![AppVeyor branch](https://img.shields.io/appveyor/ci/tonykero/Moe/master.svg?style=flat-square)](https://ci.appveyor.com/project/tonykero/moe)
 
 [![license](https://img.shields.io/github/license/tonykero/Moe.svg?style=flat-square)](https://github.com/tonykero/Moe/blob/master/LICENSE)
 
@@ -15,56 +15,48 @@ from any complexity with C++.
 Moe stands for Maybe Overpowered Entity, but isn't limited to it.
 
 Moe gives a way for the user to completely define the behavior of algorithms, all parameters are
-adjustable, Mutations & Crossovers can be defined and added to Moether in addition to those given by default.
+adjustable, and the structure allows to easily add features or custom Mutations/Crossover/Algorithms.
 
-Take a look at a base sample using Moe ([examples/hello_world.cpp](https://github.com/tonykero/Moe/blob/master/examples/hello_world.cpp)):
+Take a look at a base sample using Moe ([examples/square_root.cpp](https://github.com/tonykero/Moe/blob/master/examples/square_root.cpp)):
+
+This example illustrates how Differential Evolution can be used to search for the square root of a number (in this case 2261953600), the known answer is 47560.
 
 ```cpp
 #include <moe/moe.hpp>
 #include <iostream>
-#include <string>
+#include <chrono>
+#include <string> // needed with MSVC 19.0 for overloaded << on std::string
 
 int main()
 {
-    GeneticAlgorithm<char> moether(200, 100); // char will be the Base Type for genotype creations
-    std::vector<char> target = {'h','e','l','l','o',' ','w','o','r','l','d'};
+    DifferentialEvolution<int> moether(20);
 
-    moether.setFitnessFunction( [target](auto moe) -> double
+    long long n = 2261953600;
+
+    moether.setFitnessFunction( [n](auto moe) -> double
     {
-        std::vector<char> genotype = moe.genotype;
+        long long genotype = moe.genotype[0];
+                
+        double error = std::abs(n - genotype*genotype);
 
-        int             dSize   = target.size() - genotype.size(); // get difference of number of characters
-        unsigned int    min     = std::min(target.size(), genotype.size());
-        double          error   = std::abs(dSize) * 256; // add 256 error points for each extra or lack of char
-
-        for(unsigned int i = 0; i < min; i++)
-            error += std::abs( genotype[i] - target[i] ); // each difference of character is added to error score
-        
         return 1/(error+1);
     });
 
-    auto dataset = moe::util::getAlphabet<char>();
-    dataset.push_back(' '); // add space
-    moether.setDataset(dataset);
-
-    moether.run( 1500 );
-
-    // converts std::vector<char> to std::string
-    std::string genotype;
-        for(char c : moether.getBestMoe().genotype)
-            genotype += c;
-    //
+    auto start = std::chrono::high_resolution_clock::now();
     
-    std::cout   << "genotype: " << genotype << "\n"
-                << "fitness: " << moether.getBestMoe().fitness << std::endl;
+        moether.run( 50 );
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> diff = end-start;
+
+
+    long long genotype = moether.getBestMoe().genotype[0];
+
+    std::cout   << "genotype: "     << genotype << "\n"
+                << "fitness: "      << moether.getBestMoe().fitness << "\n"
+                << "time spent: "   << diff.count() << " seconds" << std::endl;
 }
-
 ```
-
-To understand how registering Mutations and Crossovers works check files 
-[Mutations.hpp](https://github.com/tonykero/Moe/blob/master/include/moe/base/Mutations.hpp)
-& [Crossovers.hpp](https://github.com/tonykero/Moe/blob/master/include/moe/base/Crossovers.hpp)
-and [AlgorithmImpl.hpp Line 7 - 13](https://github.com/tonykero/Moe/blob/master/include/moe/base/algorithms/AlgorithmImpl.hpp#L77)
 
 ### Examples
 
@@ -76,24 +68,25 @@ Moe contains the following features:
 
 * Algorithms:
     * Genetic Algorithm
+    * Differential Evolution
     * + Abstract Class
 
-* Crossovers:
-    * One Point
-    * Two Point
-    * Uniform
+* Genetic Algorithm features:
+    * Crossovers:
+        * One Point
+        * Two Point
+        * Uniform
 
-* Mutations:
-    * Substitution
-    * Insertion
-    * Deletion
-    * Translocation
+    * Mutations:
+        * Substitution
+        * Insertion
+        * Deletion
+        * Translocation
 
 * Planned:
     * Performance:
         * Parallel Implementation
     * Algorithms:
-        * Differential Evolution
         * Particle Swarm Optimization
 
 ## Building
@@ -118,7 +111,7 @@ Moe was successfully tested against:
     * 3.8 (3.8.0)
     * 3.9 (3.9.1)
 * MSVC:
-    * 19.0 ( Visual Studio 14 2015 )
+    * Visual Studio 14 2015
 
 Compiling:
 
