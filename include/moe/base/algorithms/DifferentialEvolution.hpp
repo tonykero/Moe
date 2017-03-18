@@ -3,6 +3,7 @@
 #include <type_traits> // std::is_arithmetic
 #include <algorithm> // std::transform
 #include <limits> // std::numeric_limits
+#include <numeric> // std::iota
 
 #include "AlgorithmImpl.hpp"
 
