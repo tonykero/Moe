@@ -8,7 +8,10 @@
 
 int main()
 {
-    GeneticAlgorithm<char> moether(200, 100); // char will be the Base Type for genotype creations
+    auto dataset = moe::util::getAlphabet<char>();
+    dataset.push_back(' '); // add space
+
+    GeneticAlgorithm<char> moether(200, dataset, 100); // char will be the Base Type for genotype creations
     std::vector<char> target = {'h','e','l','l','o',' ','w','o','r','l','d'};
 
     moether.setFitnessFunction( [target](auto moe) -> double
@@ -24,10 +27,6 @@ int main()
         
         return 1/(error+1);
     });
-
-    auto dataset = moe::util::getAlphabet<char>();
-    dataset.push_back(' '); // add space
-    moether.setDataset(dataset);
 
     auto start = std::chrono::high_resolution_clock::now();
     
