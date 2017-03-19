@@ -1,43 +1,38 @@
 init:
 - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
-environment:
-  home: C:\projects
-  cmake: C:\projects\cmake-3.8.0-rc1-win32-x86\bin\cmake.exe
-  matrix:
-  - generator : Visual Studio 14
-  - generator : Visual Studio 14 Win64
-
 version: '{branch}-{build}'
 
-os: Visual Studio 2015
+os:
+  - Visual Studio 2015
 
 branches:
   only:
     - /.*/
 
+platform:
+  - Win32
+  - x64
+  
 configuration:
-    - Debug
-    - Release
-
-install:
-  - cmd: cd %home%
-  - ps: wget https://cmake.org/files/v3.8/cmake-3.8.0-rc1-win32-x86.zip -OutFile cmake.zip
-  - cmd: 7z x cmake.zip -o"C:\projects" -y > nul
-  - cmd: '%cmake% --version'
+  - Debug
+  - Release
 
 before_build:
-  - cmd: cd %home%\moe
+  - cmd: cmake --version
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: if "%CONFIGURATION%" == "Release" (%cmake% -G "%generator%" ..)
-  - cmd: if "%CONFIGURATION%" == "Debug" (%cmake% -G "%generator%" -DDEBUG=ON ..)
+  - cmd: if "%CONFIGURATION%" == "Release" (cmake -A %platform% ..)
+  - cmd: if "%CONFIGURATION%" == "Debug" (cmake -A %platform% -DDEBUG=ON ..)
+
+build:
+  project: build\Moe.sln
+  parallel: true
+  verbosity: normal
+
 
 after_build:
-  - cmd: cd %home%\moe\build\%CONFIGURATION%
+  - cmd: cd %CONFIGURATION%
   - cmd: hello_world.exe
   - cmd: square_root.exe
   - cmd: salesman.exe
-
-build_script:
-  - msbuild C:\projects\moe\build\Moe.sln
