@@ -9,7 +9,7 @@ template <typename GenotypeType>
 class GeneticAlgorithm : public Algorithm<GenotypeType>
 {
     public:
-        GeneticAlgorithm( unsigned int _moesPerGen, unsigned int _eliteCopies = 0, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
+        GeneticAlgorithm( unsigned int _moesPerGen, std::vector<GenotypeType> _dataset, unsigned int _eliteCopies = 0, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
         
         void                                run                 ( unsigned int _generations ) override;
         
@@ -54,13 +54,15 @@ class GeneticAlgorithm : public Algorithm<GenotypeType>
         std::vector<unsigned int>   m_keys; // mutations IDs
 
         std::vector<GenotypeType>   m_dataset;
+        std::uniform_int_distribution<unsigned int> dist_dataset;
 };
 
 
 template <typename GenotypeType>
-GeneticAlgorithm<GenotypeType>::GeneticAlgorithm( unsigned int _moesPerGen, unsigned int _eliteCopies, float _mutationRate, float _crossoverRate )
+GeneticAlgorithm<GenotypeType>::GeneticAlgorithm( unsigned int _moesPerGen, std::vector<GenotypeType> _dataset, unsigned int _eliteCopies, float _mutationRate, float _crossoverRate )
 :Algorithm<GenotypeType>(),
 m_moesPerGen    ( _moesPerGen       ),
+m_dataset       ( _dataset          ),
 m_eliteCopies   ( _eliteCopies      ),
 m_mutationRate  ( _mutationRate     ),
 m_crossoverRate ( _crossoverRate    )
@@ -72,6 +74,8 @@ m_crossoverRate ( _crossoverRate    )
     registerCrossover(std::make_unique< OnePoint<GenotypeType>      >(this->m_generator), moe::Crossover::OnePoint    );
     registerCrossover(std::make_unique< TwoPoint<GenotypeType>      >(this->m_generator), moe::Crossover::TwoPoint    );
     registerCrossover(std::make_unique< Uniform<GenotypeType>       >(this->m_generator, m_crossoverRate), moe::Crossover::Uniform);
+    
+    dist_dataset = std::uniform_int_distribution<unsigned int>( 0, m_dataset.size()-1 );
 }
 
 template <typename GenotypeType>
@@ -217,6 +221,7 @@ template <typename GenotypeType>
 void GeneticAlgorithm<GenotypeType>::setDataset( std::vector<GenotypeType> _dataset )
 {
     m_dataset = _dataset;
+    dist_dataset = std::uniform_int_distribution<unsigned int>( 0, m_dataset.size()-1 );
 }
 
 template <typename GenotypeType>
@@ -253,8 +258,6 @@ std::vector<GenotypeType> GeneticAlgorithm<GenotypeType>::getRandomGenotype()
 {
     std::vector<GenotypeType> genotype;
     genotype.reserve( m_fixedSize );
-
-    std::uniform_int_distribution<unsigned int> dist_dataset(0, m_dataset.size()-1);
 
     for( unsigned int i = 0; i < m_fixedSize; i++ )
         genotype.push_back( m_dataset[ dist_dataset( this->m_generator ) ] );

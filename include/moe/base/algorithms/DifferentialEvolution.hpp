@@ -24,6 +24,8 @@ class DifferentialEvolution : public Algorithm<GenotypeType>
                         
         float           m_differentiation,
                         m_crossoverRate;
+
+        std::uniform_real_distribution<>    dist_genotype;
 };
 
 template <typename GenotypeType>
@@ -35,6 +37,7 @@ m_crossoverRate     ( _crossoverRate    ),
 m_dimensions        ( _dimensions       )
 {
     static_assert( std::is_arithmetic<GenotypeType>::value, "DifferentialEvolution only works with artihmetic types" );
+    dist_genotype = std::uniform_real_distribution<>( std::numeric_limits<GenotypeType>::lowest(), std::numeric_limits<GenotypeType>::max() );
 }
 
 template <typename GenotypeType>
@@ -136,10 +139,8 @@ std::vector<GenotypeType> DifferentialEvolution<GenotypeType>::getRandomGenotype
     std::vector<GenotypeType> genotype; 
     genotype.reserve( m_dimensions );
 
-    std::uniform_real_distribution<> dist( std::numeric_limits<GenotypeType>::lowest(), std::numeric_limits<GenotypeType>::max() );
-
     while( genotype.size() < m_dimensions )
-        genotype.push_back( dist( this->m_generator ) );
+        genotype.push_back( dist_genotype( this->m_generator ) );
 
     return genotype;
 }
