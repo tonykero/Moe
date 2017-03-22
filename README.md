@@ -1,6 +1,6 @@
 # Moe
-GCC 4.9+/Clang 3.6+ (Linux) | MSVC 19.0 (Win 32/64)
---- | ---
+GCC/Clang (Linux) | VS14 (Win 32/64)
+ :---: | :---:
 [![Travis branch](https://img.shields.io/travis/tonykero/Moe/master.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe) | [![AppVeyor branch](https://img.shields.io/appveyor/ci/tonykero/Moe/master.svg?style=flat-square)](https://ci.appveyor.com/project/tonykero/moe)
 
 [![license](https://img.shields.io/github/license/tonykero/Moe.svg?style=flat-square)](https://github.com/tonykero/Moe/blob/master/LICENSE)
