@@ -22,8 +22,8 @@ before_build:
   - cmd: cmake --version
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: if "%CONFIGURATION%" == "Release" (cmake -A %platform% ..)
-  - cmd: if "%CONFIGURATION%" == "Debug" (cmake -A %platform% -DDEBUG=ON ..)
+  - cmd: if "%CONFIGURATION%" == "Release" (cmake -DBUILD_TESTS=1 -A %platform% ..)
+  - cmd: if "%CONFIGURATION%" == "Debug" (cmake -DBUILD_TESTS=1 -A %platform% -DDEBUG=ON ..)
 
 build:
   project: build\Moe.sln
@@ -36,3 +36,4 @@ after_build:
   - cmd: hello_world.exe
   - cmd: square_root.exe
   - cmd: salesman.exe
+  - cmd: tests.exe -s -d yes

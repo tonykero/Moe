@@ -60,9 +60,10 @@ before_script:
 
 script:
     - mkdir build && cd build
-    - cmake .. && cmake --build .
+    - cmake -DBUILD_TESTS=1 .. && cmake --build .
 
 after_success:
     - ./hello_world
     - ./square_root
     - ./salesman
+    - ./tests -s -d yes
