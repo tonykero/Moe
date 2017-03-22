@@ -14,8 +14,11 @@ class GeneticAlgorithm : public Algorithm<GenotypeType>
         void                                run                 ( unsigned int _generations ) override;
         
         void                                setFixedSize        ( unsigned int _size );
+        unsigned int                        getFixedSize        () const;
         
         void                                setCrossover        ( unsigned int _crossoverID );
+        unsigned int                        getCrossover        () const;
+        
         void                                enableCrossover     ( bool );
         void                                enableMutation      ( bool );
 
@@ -162,9 +165,21 @@ void GeneticAlgorithm<GenotypeType>::setFixedSize( unsigned int _size )
 }
 
 template <typename GenotypeType>
+unsigned int GeneticAlgorithm<GenotypeType>::getFixedSize() const
+{
+    return m_fixedSize;
+}
+
+template <typename GenotypeType>
 void GeneticAlgorithm<GenotypeType>::setCrossover( unsigned int _crossoverID )
 {
     m_crossover = _crossoverID;
+}
+
+template <typename GenotypeType>
+unsigned int GeneticAlgorithm<GenotypeType>::getCrossover() const
+{
+    return m_crossover;
 }
 
 template <typename GenotypeType>
