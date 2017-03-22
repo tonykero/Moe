@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 2.8)
 
 project( MOE )
 
-option(BUILD_EXAMPLES "ON to build examples" ON)
-option(DEBUG "Enable debugging symbols flag" OFF)
+option(BUILD_EXAMPLES "Builds examples" ON)
+option(BUILD_TESTS "Builds Tests" OFF)
+option(DEBUG "Enables debug symbols" OFF)
+
 
 include_directories( "include" )
 
@@ -85,4 +87,12 @@ if(BUILD_EXAMPLES)
         )
     
     add_executable(salesman ${SOURCE})
+endif()
+
+if(BUILD_TESTS)
+    set(SOURCE
+        "tests/tests.cpp"
+        )
+        
+    add_executable(tests ${SOURCE})
 endif()
