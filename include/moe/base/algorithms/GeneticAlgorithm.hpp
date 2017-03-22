@@ -65,10 +65,10 @@ template <typename GenotypeType>
 GeneticAlgorithm<GenotypeType>::GeneticAlgorithm( unsigned int _moesPerGen, std::vector<GenotypeType> _dataset, unsigned int _eliteCopies, float _mutationRate, float _crossoverRate )
 :Algorithm<GenotypeType>(),
 m_moesPerGen    ( _moesPerGen       ),
-m_dataset       ( _dataset          ),
 m_eliteCopies   ( _eliteCopies      ),
 m_mutationRate  ( _mutationRate     ),
-m_crossoverRate ( _crossoverRate    )
+m_crossoverRate ( _crossoverRate    ),
+m_dataset       ( _dataset          )
 {
     registerMutation( std::make_unique< Substitution<GenotypeType>  >(this->m_generator), moe::Mutation::Substitution );
     registerMutation( std::make_unique< Insertion<GenotypeType>     >(this->m_generator), moe::Mutation::Insertion    );
