@@ -7,4 +7,4 @@
 #include "tests_de.cpp"
 
 #include "tests_mts.cpp"
-//#include "tests_crs.cpp"
+#include "tests_crs.cpp"
