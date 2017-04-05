@@ -51,7 +51,7 @@ class OnePoint : public Crossover<GenotypeType>
         std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> cross(const std::vector<GenotypeType>& _genotype1, const std::vector<GenotypeType>& _genotype2) const override
         {
             unsigned int min    = std::min( _genotype1.size(), _genotype2.size() );
-            std::uniform_int_distribution<unsigned int> distrib_index(0.05*min, 0.95*min);
+            std::uniform_int_distribution<unsigned int> distrib_index(0.45*min, 0.55*min);
             unsigned int index  = distrib_index( this->m_generator );
 
             std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> ret;
@@ -100,7 +100,7 @@ template <typename GenotypeType>
 class Uniform : public Crossover<GenotypeType>
 {
     public:
-        Uniform( std::default_random_engine& _generator, float& _crossoverRate)
+        Uniform( std::default_random_engine& _generator, float _crossoverRate = 0.5f)
         :Crossover<GenotypeType>(_generator), m_crossoverRate(_crossoverRate)
         {
 
@@ -123,5 +123,5 @@ class Uniform : public Crossover<GenotypeType>
             return ret;
         }
     private:
-        float& m_crossoverRate;
+        float m_crossoverRate;
 };
