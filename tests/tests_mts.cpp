@@ -1,3 +1,6 @@
+namespace mts
+{
+
 TEST_CASE( "Mutations Tests", "[mutations]" )
 {
     std::default_random_engine engine;
@@ -66,5 +69,7 @@ TEST_CASE( "Mutations Tests", "[mutations]" )
         REQUIRE( pre_size == post_size );
         REQUIRE( count == 2 );
     }
+
+}
 
 }

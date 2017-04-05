@@ -1,3 +1,6 @@
+namespace crs
+{
+
 TEST_CASE( "Crossover Tests", "[crossovers]" )
 {
     std::default_random_engine engine;
@@ -52,4 +55,6 @@ TEST_CASE( "Crossover Tests", "[crossovers]" )
         CAPTURE( pair.second );
         REQUIRE( pair.first.size() == pair.second.size() );
     }
+}
+
 }

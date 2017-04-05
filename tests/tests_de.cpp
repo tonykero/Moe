@@ -1,3 +1,6 @@
+namespace de
+{
+    
 TEST_CASE( "Differential Evolution Tests", "[differential_evolution]" )
 {
     DifferentialEvolution<int> de(20);
@@ -19,4 +22,6 @@ TEST_CASE( "Differential Evolution Tests", "[differential_evolution]" )
         CAPTURE( de.getBestMoe().fitness );
         REQUIRE( de.getBestMoe().fitness == Approx(1).margin(1));
     }
+}
+
 }

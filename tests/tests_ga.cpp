@@ -1,3 +1,6 @@
+namespace ga
+{
+    
 TEST_CASE( "Genetic Algorithm tests", "[genetic_algorithm]" )
 {
     auto dataset = moe::util::getAlphabet<char>();
@@ -61,4 +64,6 @@ TEST_CASE( "Genetic Algorithm tests", "[genetic_algorithm]" )
         CAPTURE( ga.getBestMoe().fitness );
         REQUIRE( ga.getBestMoe().fitness <= 4 );
     }
+}
+
 }
