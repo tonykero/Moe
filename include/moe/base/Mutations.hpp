@@ -138,7 +138,7 @@ class Translocation : public Mutation<GenotypeType>
                             b = distrib( this->m_generator );
             
             // Ensure a & b are different
-            while(std::abs(a-b) == 0)
+            while( a-b == 0 )
             {
                 b = distrib( this->m_generator );
             }
