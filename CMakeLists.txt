@@ -16,7 +16,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_compile_options(
                     -std=c++14
                     -Wall
-                    -Wextra
                     -pedantic
                     )
     if(DEBUG)
@@ -37,7 +36,6 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     add_compile_options(
                     -std=c++14
                     -Wall
-                    -Wextra
                     -pedantic
                     )
     if(DEBUG)

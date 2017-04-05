@@ -32,9 +32,9 @@ template <typename GenotypeType>
 DifferentialEvolution<GenotypeType>::DifferentialEvolution(unsigned int _moesPerGen, float _differentiation, float _crossoverRate, unsigned int _dimensions )
 :Algorithm<GenotypeType>(),
 m_moesPerGen        ( _moesPerGen       ),
+m_dimensions        ( _dimensions       ),
 m_differentiation   ( _differentiation  ),
-m_crossoverRate     ( _crossoverRate    ),
-m_dimensions        ( _dimensions       )
+m_crossoverRate     ( _crossoverRate    )
 {
     static_assert( std::is_arithmetic<GenotypeType>::value, "DifferentialEvolution only works with artihmetic types" );
     dist_genotype = std::uniform_real_distribution<>( std::numeric_limits<GenotypeType>::lowest(), std::numeric_limits<GenotypeType>::max() );
