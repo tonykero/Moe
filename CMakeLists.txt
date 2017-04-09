@@ -85,6 +85,12 @@ if(BUILD_EXAMPLES)
         )
     
     add_executable(salesman ${SOURCE})
+
+    set(SOURCE
+        "examples/ps_functions.cpp"
+        )
+    
+    add_executable(ps_functions ${SOURCE})
 endif()
 
 if(BUILD_TESTS)
