@@ -36,4 +36,5 @@ after_build:
   - cmd: hello_world.exe
   - cmd: square_root.exe
   - cmd: salesman.exe
+  - cmd: ps_functions.exe
   - cmd: tests.exe -s -d yes
