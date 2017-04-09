@@ -1,26 +1,20 @@
 #pragma once
 
-#include <type_traits> // std::is_arithmetic
 #include <algorithm> // std::transform
-#include <limits> // std::numeric_limits
 #include <numeric> // std::iota
 
-#include "AlgorithmImpl.hpp"
+#include "NumericAlgorithmImpl.hpp"
 
 template <typename GenotypeType>
-class DifferentialEvolution : public Algorithm<GenotypeType>
+class DifferentialEvolution : public NumericAlgorithm<GenotypeType>
 {
     public:
-        DifferentialEvolution(unsigned int _moesPerGen, float _differentiation = 0.9f ,float _crossoverRate = 0.5f, unsigned int _dimensions = 1 );
+        DifferentialEvolution(unsigned int _moesPerGen, float _differentiation = 0.9f ,float _crossoverRate = 0.5f, unsigned int _dimensions = 1, std::vector<GenotypeType> _range = { std::numeric_limits<GenotypeType>::lowest() , std::numeric_limits<GenotypeType>::max() } );
         
         void run( unsigned int _generations ) override;
 
-        std::vector<GenotypeType> getRandomGenotype() override;
-
     private:
-        unsigned int    m_generations,
-                        m_moesPerGen,
-                        m_dimensions;
+        unsigned int    m_generations;
                         
         float           m_differentiation,
                         m_crossoverRate;
@@ -29,15 +23,12 @@ class DifferentialEvolution : public Algorithm<GenotypeType>
 };
 
 template <typename GenotypeType>
-DifferentialEvolution<GenotypeType>::DifferentialEvolution(unsigned int _moesPerGen, float _differentiation, float _crossoverRate, unsigned int _dimensions )
-:Algorithm<GenotypeType>(),
-m_moesPerGen        ( _moesPerGen       ),
-m_dimensions        ( _dimensions       ),
+DifferentialEvolution<GenotypeType>::DifferentialEvolution(unsigned int _moesPerGen, float _differentiation, float _crossoverRate, unsigned int _dimensions, std::vector<GenotypeType> _range )
+:NumericAlgorithm<GenotypeType>( _moesPerGen, _dimensions, _range ),
 m_differentiation   ( _differentiation  ),
 m_crossoverRate     ( _crossoverRate    )
 {
-    static_assert( std::is_arithmetic<GenotypeType>::value, "DifferentialEvolution only works with artihmetic types" );
-    dist_genotype = std::uniform_real_distribution<>( std::numeric_limits<GenotypeType>::lowest(), std::numeric_limits<GenotypeType>::max() );
+
 }
 
 template <typename GenotypeType>
@@ -45,7 +36,7 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
 {
     m_generations = _generations;
     
-    std::vector< Moe<GenotypeType> >    population  ( m_moesPerGen );
+    std::vector< Moe<GenotypeType> >    population  ( this->m_moesPerGen );
     
     double max = 0.0;
     unsigned int    index = 0,
@@ -53,7 +44,7 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
 
     for( auto& moe : population )
     {
-        moe.genotype = getRandomGenotype();
+        moe.genotype = this->getRandomGenotype();
         moe.fitness = this->m_fitnessFunction( moe );
         if( max < moe.fitness )
         {
@@ -96,10 +87,10 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
                                 c       = population[ random_index() ],
                                 candidate = actual;
                                 
-            std::uniform_int_distribution<unsigned int> dist_dim( 1, m_dimensions );
+            std::uniform_int_distribution<unsigned int> dist_dim( 1, this->m_dimensions );
             unsigned int r = dist_dim( this->m_generator );
 
-            for( unsigned int k = 0; k <= m_dimensions-1; k++ )
+            for( unsigned int k = 0; k <= this->m_dimensions-1; k++ )
             {
                 std::bernoulli_distribution dist_crossover( m_crossoverRate );
 
@@ -131,16 +122,4 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
     }
 
     this->m_bestMoe = population[index];
-}
-
-template <typename GenotypeType>
-std::vector<GenotypeType> DifferentialEvolution<GenotypeType>::getRandomGenotype()
-{
-    std::vector<GenotypeType> genotype; 
-    genotype.reserve( m_dimensions );
-
-    while( genotype.size() < m_dimensions )
-        genotype.push_back( dist_genotype( this->m_generator ) );
-
-    return genotype;
 }
