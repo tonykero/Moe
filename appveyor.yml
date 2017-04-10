@@ -27,13 +27,13 @@ before_build:
 build:
   project: build\Moe.sln
   parallel: true
-  verbosity: normal
+  verbosity: quiet
 
 
-after_build:
+test_script:
   - cmd: cd %CONFIGURATION%
+  - cmd: tests.exe -s -d yes
   - cmd: hello_world.exe
   - cmd: square_root.exe
   - cmd: salesman.exe
   - cmd: ps_functions.exe
-  - cmd: tests.exe -s -d yes
