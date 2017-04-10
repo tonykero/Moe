@@ -70,13 +70,13 @@ m_mutationRate  ( _mutationRate     ),
 m_crossoverRate ( _crossoverRate    ),
 m_dataset       ( _dataset          )
 {
-    registerMutation( std::make_unique< Substitution<GenotypeType>  >(this->m_generator), moe::Mutation::Substitution );
-    registerMutation( std::make_unique< Insertion<GenotypeType>     >(this->m_generator), moe::Mutation::Insertion    );
-    registerMutation( std::make_unique< Deletion<GenotypeType>      >(this->m_generator), moe::Mutation::Deletion     );
-    registerMutation( std::make_unique< Translocation<GenotypeType> >(this->m_generator), moe::Mutation::Translocation);
-    registerCrossover(std::make_unique< OnePoint<GenotypeType>      >(this->m_generator), moe::Crossover::OnePoint    );
-    registerCrossover(std::make_unique< TwoPoint<GenotypeType>      >(this->m_generator), moe::Crossover::TwoPoint    );
-    registerCrossover(std::make_unique< Uniform<GenotypeType>       >(this->m_generator, m_crossoverRate), moe::Crossover::Uniform);
+    registerMutation( std::make_unique< Substitution<GenotypeType>  >(Algorithm<GenotypeType>::m_generator), moe::Mutation::Substitution );
+    registerMutation( std::make_unique< Insertion<GenotypeType>     >(Algorithm<GenotypeType>::m_generator), moe::Mutation::Insertion    );
+    registerMutation( std::make_unique< Deletion<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::Mutation::Deletion     );
+    registerMutation( std::make_unique< Translocation<GenotypeType> >(Algorithm<GenotypeType>::m_generator), moe::Mutation::Translocation);
+    registerCrossover(std::make_unique< OnePoint<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::Crossover::OnePoint    );
+    registerCrossover(std::make_unique< TwoPoint<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::Crossover::TwoPoint    );
+    registerCrossover(std::make_unique< Uniform<GenotypeType>       >(Algorithm<GenotypeType>::m_generator, m_crossoverRate), moe::Crossover::Uniform);
     
     dist_dataset = std::uniform_int_distribution<unsigned int>( 0, m_dataset.size()-1 );
 }
@@ -102,7 +102,7 @@ void GeneticAlgorithm<GenotypeType>::run( unsigned int _generations )
                 
         for( unsigned int j = 0; j < population.size(); j++ )
         {
-            fitnesses[j] = this->m_fitnessFunction( population[j] );
+            fitnesses[j] = Algorithm<GenotypeType>::m_fitnessFunction( population[j] );
             population[j].fitness = fitnesses[j];
                     
             if(max < fitnesses[j])
@@ -113,16 +113,16 @@ void GeneticAlgorithm<GenotypeType>::run( unsigned int _generations )
         }
         // --
                 
-        this->m_bestMoe = population[index];
-        std::vector< Moe<GenotypeType> > new_population(m_eliteCopies, this->m_bestMoe);
+        Algorithm<GenotypeType>::m_bestMoe = population[index];
+        std::vector< Moe<GenotypeType> > new_population(m_eliteCopies, Algorithm<GenotypeType>::m_bestMoe);
 
         while(new_population.size() + 2 < m_moesPerGen)
         {
             // random selection
             std::uniform_int_distribution<unsigned int> dist_rnd(0, population.size()-1);
                     
-            unsigned int    a = dist_rnd( this->m_generator ),
-                            b = dist_rnd( this->m_generator );
+            unsigned int    a = dist_rnd( Algorithm<GenotypeType>::m_generator ),
+                            b = dist_rnd( Algorithm<GenotypeType>::m_generator );
 
             Moe<GenotypeType>   selected1 = population[a],
                                 selected2 = population[b],
@@ -141,10 +141,10 @@ void GeneticAlgorithm<GenotypeType>::run( unsigned int _generations )
             {
                 std::bernoulli_distribution dist_mutation( m_mutationRate );
                         
-                if(dist_mutation( this->m_generator ))
+                if(dist_mutation( Algorithm<GenotypeType>::m_generator ))
                     mutate(offspring1);
                         
-                if(dist_mutation( this->m_generator ))
+                if(dist_mutation( Algorithm<GenotypeType>::m_generator ))
                     mutate(offspring2);
             }
                     
@@ -265,7 +265,7 @@ template <typename GenotypeType>
 void GeneticAlgorithm<GenotypeType>::mutate( Moe<GenotypeType>& _moe )
 {
     std::uniform_int_distribution<unsigned int> dist_mutation(0, m_keys.size()-1);
-    _moe.genotype = m_mutations[ m_keys[ dist_mutation( this->m_generator ) ] ]->mutate(_moe.genotype, m_dataset );
+    _moe.genotype = m_mutations[ m_keys[ dist_mutation( Algorithm<GenotypeType>::m_generator ) ] ]->mutate(_moe.genotype, m_dataset );
 }
 
 template <typename GenotypeType>
@@ -275,7 +275,7 @@ std::vector<GenotypeType> GeneticAlgorithm<GenotypeType>::getRandomGenotype()
     genotype.reserve( m_fixedSize );
 
     for( unsigned int i = 0; i < m_fixedSize; i++ )
-        genotype.push_back( m_dataset[ dist_dataset( this->m_generator ) ] );
+        genotype.push_back( m_dataset[ dist_dataset( Algorithm<GenotypeType>::m_generator ) ] );
 
     return genotype;
 }

@@ -52,7 +52,7 @@ class OnePoint : public Crossover<GenotypeType>
         {
             unsigned int min    = std::min( _genotype1.size(), _genotype2.size() );
             std::uniform_int_distribution<unsigned int> distrib_index(0.45*min, 0.55*min);
-            unsigned int index  = distrib_index( this->m_generator );
+            unsigned int index  = distrib_index( Crossover<GenotypeType>::m_generator );
 
             std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> ret;
 
@@ -81,9 +81,9 @@ class TwoPoint : public Crossover<GenotypeType>
             unsigned int min    = std::min( _genotype1.size(), _genotype2.size() );
 
             distrib_index       = std::uniform_int_distribution<unsigned int>(min*0.05f, min*0.45f);
-            unsigned int index1 = distrib_index( this->m_generator );
+            unsigned int index1 = distrib_index( Crossover<GenotypeType>::m_generator );
             distrib_index       = std::uniform_int_distribution<unsigned int>(min*0.55f, min*0.95f);
-            unsigned int index2 = distrib_index( this->m_generator );
+            unsigned int index2 = distrib_index( Crossover<GenotypeType>::m_generator );
 
             std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> ret;
             ret.first   = _genotype1;
@@ -117,7 +117,7 @@ class Uniform : public Crossover<GenotypeType>
 
             for(unsigned int i = 0; i < min; i++)
             {
-                if(distrib_uniform( this->m_generator ))
+                if(distrib_uniform( Crossover<GenotypeType>::m_generator ))
                     std::swap(ret.first[i], ret.second[i]);
             }
             return ret;

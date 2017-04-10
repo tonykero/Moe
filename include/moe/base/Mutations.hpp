@@ -56,13 +56,13 @@ class Substitution : public Mutation<GenotypeType>
             std::uniform_int_distribution<unsigned int> distrib;
 
             distrib = std::uniform_int_distribution<unsigned int>(0, moe_genotype.size()-1);
-            unsigned int genotype_index = distrib( this->m_generator );
+            unsigned int genotype_index = distrib( Mutation<GenotypeType>::m_generator );
             
             distrib = std::uniform_int_distribution<unsigned int>(0, _dataset.size()-1);
-            unsigned int dataset_index  = distrib( this->m_generator );
+            unsigned int dataset_index  = distrib( Mutation<GenotypeType>::m_generator );
 
             while(moe_genotype[genotype_index] == dataset[dataset_index])
-                dataset_index = distrib( this->m_generator );
+                dataset_index = distrib( Mutation<GenotypeType>::m_generator );
 
             GenotypeType mutation = dataset[ dataset_index ];
             moe_genotype[ genotype_index ] = mutation;
@@ -86,10 +86,10 @@ class Insertion : public Mutation<GenotypeType>
             std::vector<GenotypeType> moe_genotype = _moeGenotype;
             std::uniform_int_distribution<unsigned int> distrib(0, _dataset.size()-1);
 
-            GenotypeType mutation = _dataset[ distrib( this->m_generator ) ];
+            GenotypeType mutation = _dataset[ distrib( Mutation<GenotypeType>::m_generator ) ];
 
             distrib = std::uniform_int_distribution<unsigned int>(0, moe_genotype.size()-1);
-            moe_genotype.insert( moe_genotype.begin() + distrib( this->m_generator ), mutation );
+            moe_genotype.insert( moe_genotype.begin() + distrib( Mutation<GenotypeType>::m_generator ), mutation );
 
             return moe_genotype;
         }
@@ -112,7 +112,7 @@ class Deletion : public Mutation<GenotypeType>
             {
                 std::uniform_int_distribution<unsigned int> distrib(0, moe_genotype.size()-1);
 
-                moe_genotype.erase( moe_genotype.begin() + distrib( this->m_generator ));
+                moe_genotype.erase( moe_genotype.begin() + distrib( Mutation<GenotypeType>::m_generator ));
             }
 
             return moe_genotype;
@@ -134,13 +134,13 @@ class Translocation : public Mutation<GenotypeType>
             std::vector<GenotypeType> moe_genotype = _moeGenotype;
             std::uniform_int_distribution<unsigned int> distrib(0, moe_genotype.size()-1);
 
-            unsigned int    a = distrib( this->m_generator ),
-                            b = distrib( this->m_generator );
+            unsigned int    a = distrib( Mutation<GenotypeType>::m_generator ),
+                            b = distrib( Mutation<GenotypeType>::m_generator );
             
             // Ensure a & b are different
             while( a-b == 0 )
             {
-                b = distrib( this->m_generator );
+                b = distrib( Mutation<GenotypeType>::m_generator );
             }
                             
             GenotypeType tmp = moe_genotype[a];

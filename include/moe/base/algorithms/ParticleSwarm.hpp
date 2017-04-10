@@ -33,9 +33,9 @@ void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
 {
     m_generations = _generations;
 
-    std::vector< Moe<GenotypeType> >            population      ( this->m_moesPerGen );
-    std::vector< Moe<GenotypeType> >            best_genotypes  ( this->m_moesPerGen );
-    std::vector< std::vector<GenotypeType> >    velocities      ( this->m_moesPerGen );
+    std::vector< Moe<GenotypeType> >            population      ( NumericAlgorithm<GenotypeType>::m_moesPerGen );
+    std::vector< Moe<GenotypeType> >            best_genotypes  ( NumericAlgorithm<GenotypeType>::m_moesPerGen );
+    std::vector< std::vector<GenotypeType> >    velocities      ( NumericAlgorithm<GenotypeType>::m_moesPerGen );
 
     std::uniform_real_distribution<float> dist_coef     ( 0.0f, 1.0f );
 
@@ -48,10 +48,10 @@ void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
     
     for( auto& moe : population )
     {
-        moe.genotype            = this->getRandomGenotype();
-        moe.fitness             = this->m_fitnessFunction( moe );
+        moe.genotype            = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+        moe.fitness             = Algorithm<GenotypeType>::m_fitnessFunction( moe );
         
-        velocities[count]       = this->getRandomGenotype();
+        velocities[count]       = NumericAlgorithm<GenotypeType>::getRandomGenotype();
         
         best_genotypes[count].genotype  = moe.genotype;
         best_genotypes[count].fitness   = moe.fitness;
@@ -63,29 +63,29 @@ void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
         count++;
     }
     
-    this->m_bestMoe = population[index];
+    Algorithm<GenotypeType>::m_bestMoe = population[index];
 
     for( unsigned int i = 0; i < m_generations; i++ )
     {
         for( unsigned int j = 0; j < population.size(); j++ )
         {
-            for( unsigned int k = 0; k < this->m_dimensions; k++ )
+            for( unsigned int k = 0; k < NumericAlgorithm<GenotypeType>::m_dimensions; k++ )
             {
-                float   r1 = dist_coef( this->m_generator ),
-                        r2 = dist_coef( this->m_generator );
+                float   r1 = dist_coef( Algorithm<GenotypeType>::m_generator ),
+                        r2 = dist_coef( Algorithm<GenotypeType>::m_generator );
 
                 velocities[j][k] *= m_weight;
                 velocities[j][k] += m_coef1*r1*( best_genotypes[j].genotype[k] - population[j].genotype[k] );
-                velocities[j][k] += m_coef2*r2*( this->m_bestMoe.genotype[k] - population[j].genotype[k] );
+                velocities[j][k] += m_coef2*r2*( Algorithm<GenotypeType>::m_bestMoe.genotype[k] - population[j].genotype[k] );
                 
                 population[j].genotype[k] += velocities[j][k];
             }
-            population[j].fitness = this->m_fitnessFunction( population[j] );
+            population[j].fitness = Algorithm<GenotypeType>::m_fitnessFunction( population[j] );
             if( population[j].fitness > best_genotypes[j].fitness )
             {
                 best_genotypes[j] = population[j];
-                if( best_genotypes[j].fitness > this->m_bestMoe.fitness )
-                    this->m_bestMoe = best_genotypes[j];
+                if( best_genotypes[j].fitness > Algorithm<GenotypeType>::m_bestMoe.fitness )
+                    Algorithm<GenotypeType>::m_bestMoe = best_genotypes[j];
             }
         }
     }

@@ -37,7 +37,7 @@ std::vector<GenotypeType> NumericAlgorithm<GenotypeType>::getRandomGenotype()
     genotype.reserve( m_dimensions );
 
     while( genotype.size() < m_dimensions )
-        genotype.push_back( dist_genotype( this->m_generator ) );
+        genotype.push_back( dist_genotype( Algorithm<GenotypeType>::m_generator ) );
 
     return genotype;
 }

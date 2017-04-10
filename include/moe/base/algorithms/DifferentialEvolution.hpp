@@ -36,7 +36,7 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
 {
     m_generations = _generations;
     
-    std::vector< Moe<GenotypeType> >    population  ( this->m_moesPerGen );
+    std::vector< Moe<GenotypeType> >    population  ( NumericAlgorithm<GenotypeType>::m_moesPerGen );
     
     double max = 0.0;
     unsigned int    index = 0,
@@ -44,8 +44,8 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
 
     for( auto& moe : population )
     {
-        moe.genotype = this->getRandomGenotype();
-        moe.fitness = this->m_fitnessFunction( moe );
+        moe.genotype = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+        moe.fitness = NumericAlgorithm<GenotypeType>::m_fitnessFunction( moe );
         if( max < moe.fitness )
         {
             max = moe.fitness;
@@ -72,7 +72,7 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
             {
                 std::uniform_int_distribution<unsigned int> dist( 0, max );
                 
-                unsigned int    pick = dist( this->m_generator ),
+                unsigned int    pick = dist( Algorithm<GenotypeType>::m_generator ),
                                 ret = pickableIDs[pick];
                 
                 pickableIDs.erase( pickableIDs.begin() + pick );
@@ -87,19 +87,19 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
                                 c       = population[ random_index() ],
                                 candidate = actual;
                                 
-            std::uniform_int_distribution<unsigned int> dist_dim( 1, this->m_dimensions );
-            unsigned int r = dist_dim( this->m_generator );
+            std::uniform_int_distribution<unsigned int> dist_dim( 1, NumericAlgorithm<GenotypeType>::m_dimensions );
+            unsigned int r = dist_dim( Algorithm<GenotypeType>::m_generator );
 
-            for( unsigned int k = 0; k <= this->m_dimensions-1; k++ )
+            for( unsigned int k = 0; k <= NumericAlgorithm<GenotypeType>::m_dimensions-1; k++ )
             {
                 std::bernoulli_distribution dist_crossover( m_crossoverRate );
 
-                if( dist_crossover( this->m_generator ) || ( k +1 == r ) )
+                if( dist_crossover( Algorithm<GenotypeType>::m_generator ) || ( k +1 == r ) )
                     candidate.genotype[k] = a.genotype[k] + m_differentiation * ( b.genotype[k] - c.genotype[k] );
                 else
                     candidate.genotype[k] = actual.genotype[k];
             }
-            candidate.fitness   = this->m_fitnessFunction( candidate );
+            candidate.fitness   = Algorithm<GenotypeType>::m_fitnessFunction( candidate );
             
             if( candidate.fitness > actual.fitness )
                 population[j] = std::move( candidate );
@@ -121,5 +121,5 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
         count++;
     }
 
-    this->m_bestMoe = population[index];
+    Algorithm<GenotypeType>::m_bestMoe = population[index];
 }
