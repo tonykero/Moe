@@ -24,7 +24,7 @@ This example illustrates how Differential Evolution can be used to search for th
 ```cpp
 #include <moe/moe.hpp>
 #include <iostream>
-#include <chrono>
+#include <chrono> // optional
 #include <string> // needed with MSVC 19.0 for overloaded << on std::string
 
 int main()
@@ -42,12 +42,12 @@ int main()
         return 1/(error+1);
     });
 
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now(); // optional
     
         moether.run( 50 );
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> diff = end-start;
+    auto end = std::chrono::high_resolution_clock::now();   // optional
+    std::chrono::duration<float> diff = end-start;          //      //
 
 
     long long genotype = moether.getBestMoe().genotype[0];
@@ -69,7 +69,8 @@ Moe contains the following features:
 * Algorithms:
     * Genetic Algorithm
     * Differential Evolution
-    * + Abstract Class
+    * Particle Swarm Optimization
+    * + Abstract Classes
 
 * Genetic Algorithm features:
     * Crossovers:
@@ -86,8 +87,8 @@ Moe contains the following features:
 * Planned:
     * Performance:
         * Parallel Implementation
-    * Algorithms:
-        * Particle Swarm Optimization
+    * Better Parameters handling
+        * Serialization
 
 ## Building
 
@@ -95,10 +96,11 @@ Moe uses CMake, options are available:
 
 Options         | Description                   | Default Value |
 --------------- | ----------------------------- | ------------- |
-BUILD_EXAMPLES  | build examples                | ON            |
-DEBUG           | Enable debugging symbols      | OFF           |
+BUILD_EXAMPLES  | Builds Examples               | ON            |
+BUILD_TESTS     | Builds Catch Unit Tests       | OFF           |
+DEBUG           | Enables debugging symbols     | OFF           |
 
-Moe was successfully tested against:
+Moe was(and still) successfully tested against:
 * GCC:
     * 4.9 (4.9.4)
     * 5 (5.4.1)
