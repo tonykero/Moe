@@ -1,55 +1,89 @@
 language: cpp
-sudo: required
-dist: trusty
-
-addons:
-    apt:
-        sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-            - llvm-toolchain-precise-3.7
-            - llvm-toolchain-precise-3.8
-            - llvm-toolchain-precise-3.9
-        packages:
-            - g++-4.9
-            - g++-5
-            - g++-6
-            - clang-3.6
-            - clang-3.7
-            - clang-3.8
-            - clang-3.9
+sudo: false
 
 matrix:
   include:
     - compiler: gcc
-      env: COMPILER=g++-4.9
+      addons: &gcc5
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5']
+      env: COMPILER=g++-5 DEBUG=0
     
     - compiler: gcc
-      env: COMPILER=g++-5
-    
-    - compiler: gcc
-      env: COMPILER=g++-6
-    
-    - compiler: clang
-      env: COMPILER=clang++-3.6
+      addons: &gcc6
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6']
+      env: COMPILER=g++-6 DEBUG=0
     
     - compiler: clang
-      env: COMPILER=clang++-3.7
+      addons: &clang36
+        apt:
+          sources: ['llvm-toolchain-precise-3.6', 'ubuntu-toolchain-r-test']
+          packages: ['clang-3.6']
+      env: COMPILER=clang++-3.6 DEBUG=0
     
     - compiler: clang
-      env: COMPILER=clang++-3.8
+      addons: &clang37
+        apt:
+          sources: ['llvm-toolchain-precise-3.7', 'ubuntu-toolchain-r-test']
+          packages: ['clang-3.7']
+      env: COMPILER=clang++-3.7 DEBUG=0
+    
+    - compiler: clang
+      addons: &clang38
+        apt:
+          sources: ['llvm-toolchain-precise-3.8', 'ubuntu-toolchain-r-test']
+          packages: ['clang-3.8']
+      env: COMPILER=clang++-3.8 DEBUG=0
 
     - compiler: clang
-      env: COMPILER=clang++-3.9
+      addons: &clang39
+        apt:
+          sources: ['llvm-toolchain-precise-3.9', 'ubuntu-toolchain-r-test']
+          packages: ['clang-3.9']
+      env: COMPILER=clang++-3.9 DEBUG=0
+
+    - compiler: gcc
+      addons: *gcc5
+      env: COMPILER=g++-5 DEBUG=1
+    
+    - compiler: gcc
+      addons: *gcc6
+      env: COMPILER=g++-6 DEBUG=1
+    
+    - compiler: clang
+      addons: *clang36
+      env: COMPILER=clang++-3.6 DEBUG=1
+    
+    - compiler: clang
+      addons: *clang37
+      env: COMPILER=clang++-3.7 DEBUG=1
+    
+    - compiler: clang
+      addons: *clang38
+      env: COMPILER=clang++-3.8 DEBUG=1
+
+    - compiler: clang
+      addons: *clang39
+      env: COMPILER=clang++-3.9 DEBUG=1
 
 branches:
     only:
         - /.*/
 
+install:
+    - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+    - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+    - mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.8/cmake-3.8.0-rc4-Linux-x86_64.tar.gz | tar --strip-components=1 -xz -C cmake
+    - export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+
 before_script:
     - export CXX=${COMPILER}
+    - cd ${TRAVIS_BUILD_DIR}
     - mkdir build && cd build
-    - cmake -DBUILD_TESTS=1 ..
+    - cmake -DBUILD_TESTS=1 -DDEBUG=${DEBUG} ..
 
 script:
     - make -j 2
