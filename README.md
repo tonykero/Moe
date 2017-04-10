@@ -1,5 +1,5 @@
 # Moe
-GCC/Clang (Linux) | VS14 (Win 32/64)
+GCC / Clang (Linux) | VS 14/15 (Win 32/64)
  :---: | :---:
 [![Travis branch](https://img.shields.io/travis/tonykero/Moe/master.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe) | [![AppVeyor branch](https://img.shields.io/appveyor/ci/tonykero/Moe/master.svg?style=flat-square)](https://ci.appveyor.com/project/tonykero/moe)
 
@@ -102,7 +102,6 @@ DEBUG           | Enables debugging symbols     | OFF           |
 
 Moe was(and still) successfully tested against:
 * GCC:
-    * 4.9 (4.9.4)
     * 5 (5.4.1)
     * 6 (6.2)
     * MinGW:
@@ -114,6 +113,9 @@ Moe was(and still) successfully tested against:
     * 3.9 (3.9.1)
 * MSVC:
     * Visual Studio 14 2015
+    * Visual Studio 15 2017
+
+> Moe does not compile anymore on GCC 4.9
 
 Compiling:
 
