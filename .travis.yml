@@ -3,13 +3,15 @@ sudo: false
 
 matrix:
   include:
+
     - compiler: gcc
-      addons: &gcc6
+      sudo: true
+      addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-6', 'lcov']
-      env: COMPILER=g++-6 COVERAGE=1
-
+          packages: ['g++-5', 'lcov']
+      env: COMPILER=g++-5 COVERAGE=1
+    
     - compiler: gcc
       addons: &gcc5
         apt:
@@ -18,7 +20,10 @@ matrix:
       env: COMPILER=g++-5 DEBUG=0
     
     - compiler: gcc
-      addons: *gcc6
+      addons: &gcc6
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6']
       env: COMPILER=g++-6 DEBUG=0
     
     - compiler: clang
@@ -76,6 +81,13 @@ matrix:
 branches:
     only:
         - /.*/
+      
+before_install:
+    - if [ ${COVERAGE} == 1 ]; then
+      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 50;
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50;
+      sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 50;
+      fi
 
 install:
     - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
@@ -106,4 +118,5 @@ after_success:
       lcov --directory . --capture --output-file coverage.info;
       lcov --remove coverage.info '/usr/*' '*catch.hpp' --output-file coverage.info;
       lcov --list coverage.info;
+      bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports";
       fi
