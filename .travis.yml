@@ -4,6 +4,13 @@ sudo: false
 matrix:
   include:
     - compiler: gcc
+      addons: &gcc6
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6', 'lcov']
+      env: COMPILER=g++-6 COVERAGE=1
+
+    - compiler: gcc
       addons: &gcc5
         apt:
           sources: ['ubuntu-toolchain-r-test']
@@ -11,10 +18,7 @@ matrix:
       env: COMPILER=g++-5 DEBUG=0
     
     - compiler: gcc
-      addons: &gcc6
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-6']
+      addons: *gcc6
       env: COMPILER=g++-6 DEBUG=0
     
     - compiler: clang
@@ -83,14 +87,23 @@ before_script:
     - export CXX=${COMPILER}
     - cd ${TRAVIS_BUILD_DIR}
     - mkdir build && cd build
-    - cmake -DBUILD_TESTS=1 -DDEBUG=${DEBUG} ..
-
+    - if [ ${COVERAGE} == 1 ];
+      then cmake -DBUILD_EXAMPLES=0 -DCOVERAGE=1 ..;
+      else cmake -DBUILD_TESTS=1 -DDEBUG=${DEBUG} ..;
+      fi
+      
 script:
     - make -j 2
 
 after_success:
-    - ./hello_world
-    - ./square_root
-    - ./salesman
-    - ./ps_functions
     - ./tests -s -d yes
+    - if [ ${COVERAGE} != 1 ]; then
+      ./hello_world;
+      ./square_root;
+      ./salesman;
+      ./ps_functions;
+      else
+      lcov --directory . --capture --output-file coverage.info;
+      lcov --remove coverage.info '/usr/*' '*catch.hpp' --output-file coverage.info;
+      lcov --list coverage.info;
+      fi

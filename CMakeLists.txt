@@ -38,7 +38,19 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
                     -Wall
                     -pedantic
                     )
-    if(DEBUG)
+    if(COVERAGE)
+        add_compile_options(
+                    -g
+                    -O0
+                    --coverage
+                    )
+        set(CMAKE_EXE_LINKER_FLAGS
+            --coverage
+            )
+        set(CMAKE_SHARED_LINKER_FLAGS
+            --coverage
+            )
+    elseif(DEBUG)
         #Debug Mode
         add_compile_options(
                     -g
@@ -93,7 +105,7 @@ if(BUILD_EXAMPLES)
     add_executable(ps_functions ${SOURCE})
 endif()
 
-if(BUILD_TESTS)
+if(BUILD_TESTS OR COVERAGE)
     set(SOURCE
         "tests/tests.cpp"
         )
