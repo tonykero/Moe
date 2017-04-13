@@ -1,0 +1,9 @@
+*       text=auto
+
+*.cpp   text diff=cpp whitespace=trailing-space,space-before-tab,tab-in-indent,tabwidth=4
+*.cc    text diff=cpp whitespace=trailing-space,space-before-tab,tab-in-indent,tabwidth=4
+*.hpp   text diff=cpp whitespace=trailing-space,space-before-tab,tab-in-indent,tabwidth=4
+*.h     text diff=cpp whitespace=trailing-space,space-before-tab,tab-in-indent,tabwidth=4
+
+*.yml   text diff=yaml whitespace=trailing-space,space-before-tab,tab-in-indent,tabwidth=2
+
