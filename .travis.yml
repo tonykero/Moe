@@ -9,7 +9,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'lcov']
+          packages: ['g++-5']
       env: COMPILER=g++-5 COVERAGE=1
     
     - compiler: gcc
@@ -87,6 +87,11 @@ before_install:
       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 50;
       sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50;
       sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 50;
+      cd "${TRAVIS_BUILD_DIR}";
+      wget "http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.13.orig.tar.gz";
+      tar xf lcov_1.13.orig.tar.gz;
+      cd "lcov-1.13/";
+      sudo make install;
       fi
 
 install:
