@@ -1,7 +1,7 @@
 # Moe
-GCC / Clang (Linux) | VS 14/15 (Win 32/64)
- :---: | :---:
-[![Travis branch](https://img.shields.io/travis/tonykero/Moe/master.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe) | [![AppVeyor branch](https://img.shields.io/appveyor/ci/tonykero/Moe/master.svg?style=flat-square)](https://ci.appveyor.com/project/tonykero/moe)
+GCC / Clang (Linux) | VS 14/15 (Win 32/64) | Coverage (g++5)
+ :---: | :---: | :---:
+[![Travis branch](https://img.shields.io/travis/tonykero/Moe/master.svg?style=flat-square)](https://travis-ci.org/tonykero/Moe) | [![AppVeyor branch](https://img.shields.io/appveyor/ci/tonykero/Moe/master.svg?style=flat-square)](https://ci.appveyor.com/project/tonykero/moe) | [![Codecov branch](https://img.shields.io/codecov/c/github/tonykero/Moe/master.svg?style=flat-square)](https://codecov.io/gh/tonykero/Moe/)
 
 [![license](https://img.shields.io/github/license/tonykero/Moe.svg?style=flat-square)](https://github.com/tonykero/Moe/blob/master/LICENSE)
 
