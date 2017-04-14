@@ -68,21 +68,18 @@ Moe contains the following features:
 
 * Algorithms:
     * Genetic Algorithm
+        * Crossovers:
+            * One Point
+            * Two Point
+            * Uniform
+        * Mutations:
+            * Substitution
+            * Insertion
+            * Deletion
+            * Translocation
     * Differential Evolution
     * Particle Swarm Optimization
     * + Abstract Classes
-
-* Genetic Algorithm features:
-    * Crossovers:
-        * One Point
-        * Two Point
-        * Uniform
-
-    * Mutations:
-        * Substitution
-        * Insertion
-        * Deletion
-        * Translocation
 
 * Planned:
     * Performance:
@@ -100,7 +97,7 @@ BUILD_EXAMPLES  | Builds Examples               | ON            |
 BUILD_TESTS     | Builds Catch Unit Tests       | OFF           |
 DEBUG           | Enables debugging symbols     | OFF           |
 
-Moe was(and still) successfully tested against:
+Moe is successfully tested against:
 * GCC:
     * 5 (5.4.1)
     * 6 (6.2)
@@ -119,13 +116,31 @@ Moe was(and still) successfully tested against:
 
 Compiling:
 
+The following clone Moe and generates with CMake
 ```
 git clone https://github.com/tonykero/Moe.git
 cd Moe
-mkdir build && cd build && cmake .. && cmake --build .
+mkdir build && cd build && cmake ..
 ```
-builds Moe with examples
+then under linux
+```
+make
+```
+or
+```
+cmake --build .
+```
+or (if with MSVC, and -DDEBUG=1 was not specified)
+```
+cmake --build . --config Release
+```
+
+## Contributing
+
+Please read [Contributing](https://github.com/tonykero/Moe/blob/master/CONTRIBUTING.md)
 
 ## License
 
 [The MIT License](https://opensource.org/licenses/MIT)
+
+> Note: 'tests' folder contains catch.hpp which comes from <https://github.com/philsquared/Catch> and is licensed under the Boost Software License terms.
