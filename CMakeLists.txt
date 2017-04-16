@@ -9,6 +9,11 @@ option(DEBUG "Enables debug symbols" OFF)
 
 include_directories( "include" )
 
+if(BUILD_TESTS OR COVERAGE)
+    # Add philsquared/Catch
+    include_directories( "3rd/catch/single_include" ) # catch.hpp
+endif()
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 
     # using Clang
