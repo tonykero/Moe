@@ -17,6 +17,9 @@ configuration:
   - Debug
   - Release
 
+install:
+  - cmd: git submodule update --init --recursive
+
 before_build:
   - cmd: cmake --version
   - cmd: mkdir build
