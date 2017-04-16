@@ -2,6 +2,9 @@
 
 #include "NumericAlgorithmImpl.hpp"
 
+namespace moe
+{
+
 template <typename GenotypeType>
 class ParticleSwarm : public NumericAlgorithm<GenotypeType>
 {
@@ -89,5 +92,7 @@ void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
             }
         }
     }
+
+}
 
 }

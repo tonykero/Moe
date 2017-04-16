@@ -3,6 +3,8 @@
 
 #include <moe/moe.hpp>
 
+using namespace moe;
+
 #include "tests_ga.cpp"
 #include "tests_de.cpp"
 #include "tests_ps.cpp"

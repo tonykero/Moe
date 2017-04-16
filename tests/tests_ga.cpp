@@ -19,7 +19,7 @@ TEST_CASE( "Genetic Algorithm tests", "[genetic_algorithm]" )
         }
         SECTION( "Default Crossover is OnePoint" )
         {
-            REQUIRE( ga.getCrossover() == moe::Crossover::OnePoint );
+            REQUIRE( ga.getCrossover() == moe::crx::OnePoint );
         }
 
         SECTION( "Crossover & Mutation is enabled by default" )

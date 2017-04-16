@@ -5,6 +5,9 @@
 
 #include "AlgorithmImpl.hpp"
 
+namespace moe
+{
+
 template <typename GenotypeType>
 class GeneticAlgorithm : public Algorithm<GenotypeType>
 {
@@ -44,7 +47,7 @@ class GeneticAlgorithm : public Algorithm<GenotypeType>
                         m_moesPerGen,
                         m_eliteCopies;
         unsigned int    m_fixedSize             = 8;
-        unsigned int    m_crossover             = moe::Crossover::OnePoint;
+        unsigned int    m_crossover             = moe::crx::OnePoint;
 
         float           m_mutationRate,
                         m_crossoverRate;
@@ -70,13 +73,13 @@ m_mutationRate  ( _mutationRate     ),
 m_crossoverRate ( _crossoverRate    ),
 m_dataset       ( _dataset          )
 {
-    registerMutation( std::make_unique< Substitution<GenotypeType>  >(Algorithm<GenotypeType>::m_generator), moe::Mutation::Substitution );
-    registerMutation( std::make_unique< Insertion<GenotypeType>     >(Algorithm<GenotypeType>::m_generator), moe::Mutation::Insertion    );
-    registerMutation( std::make_unique< Deletion<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::Mutation::Deletion     );
-    registerMutation( std::make_unique< Translocation<GenotypeType> >(Algorithm<GenotypeType>::m_generator), moe::Mutation::Translocation);
-    registerCrossover(std::make_unique< OnePoint<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::Crossover::OnePoint    );
-    registerCrossover(std::make_unique< TwoPoint<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::Crossover::TwoPoint    );
-    registerCrossover(std::make_unique< Uniform<GenotypeType>       >(Algorithm<GenotypeType>::m_generator, m_crossoverRate), moe::Crossover::Uniform);
+    registerMutation( std::make_unique< Substitution<GenotypeType>  >(Algorithm<GenotypeType>::m_generator), moe::mtn::Substitution );
+    registerMutation( std::make_unique< Insertion<GenotypeType>     >(Algorithm<GenotypeType>::m_generator), moe::mtn::Insertion    );
+    registerMutation( std::make_unique< Deletion<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::mtn::Deletion     );
+    registerMutation( std::make_unique< Translocation<GenotypeType> >(Algorithm<GenotypeType>::m_generator), moe::mtn::Translocation);
+    registerCrossover(std::make_unique< OnePoint<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::crx::OnePoint    );
+    registerCrossover(std::make_unique< TwoPoint<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::crx::TwoPoint    );
+    registerCrossover(std::make_unique< Uniform<GenotypeType>       >(Algorithm<GenotypeType>::m_generator, m_crossoverRate), moe::crx::Uniform);
     
     dist_dataset = std::uniform_int_distribution<unsigned int>( 0, m_dataset.size()-1 );
 }
@@ -160,8 +163,8 @@ void GeneticAlgorithm<GenotypeType>::setFixedSize( unsigned int _size )
 {
     m_fixedSize = _size;
     
-    unregisterMutation( moe::Mutation::Insertion );
-    unregisterMutation( moe::Mutation::Deletion );
+    unregisterMutation( moe::mtn::Insertion );
+    unregisterMutation( moe::mtn::Deletion );
 }
 
 template <typename GenotypeType>
@@ -278,4 +281,6 @@ std::vector<GenotypeType> GeneticAlgorithm<GenotypeType>::getRandomGenotype()
         genotype.push_back( m_dataset[ dist_dataset( Algorithm<GenotypeType>::m_generator ) ] );
 
     return genotype;
+}
+
 }

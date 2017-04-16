@@ -13,7 +13,7 @@ void remove_duplicates(std::vector<char> &str);
 
 int main()
 {
-    GeneticAlgorithm<char> moether(30, {'B', 'C', 'D', 'E'}, 5);
+    moe::GeneticAlgorithm<char> moether(30, {'B', 'C', 'D', 'E'}, 5);
     
     // we create a 5-node graph, or 5 city map
     // as described here: http://computing.dcu.ie/~humphrys/Notes/Morelli.images/2a.gif
@@ -76,7 +76,7 @@ int main()
     });
 
     moether.setFixedSize( 4 );
-    moether.setCrossover( moe::Crossover::Uniform);
+    moether.setCrossover( moe::crx::Uniform);
 
     auto start = std::chrono::high_resolution_clock::now();
         moether.run( 100 );

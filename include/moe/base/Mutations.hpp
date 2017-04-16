@@ -6,7 +6,7 @@
 
 namespace moe
 {
-namespace Mutation
+namespace mtn
 {
     enum : const unsigned int
     {
@@ -15,7 +15,6 @@ namespace Mutation
         Deletion,
         Translocation
     };
-}
 }
 
 template <typename GenotypeType>
@@ -150,3 +149,5 @@ class Translocation : public Mutation<GenotypeType>
             return moe_genotype;
         }
 };
+
+}

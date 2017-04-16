@@ -6,7 +6,7 @@
 
 namespace moe
 {
-namespace Crossover
+namespace crx
 {
     enum : const unsigned int
     {
@@ -14,7 +14,6 @@ namespace Crossover
         TwoPoint,
         Uniform
     };
-}
 }
 
 template <typename GenotypeType>
@@ -125,3 +124,5 @@ class Uniform : public Crossover<GenotypeType>
     private:
         float m_crossoverRate;
 };
+
+}

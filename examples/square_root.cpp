@@ -8,7 +8,7 @@
 
 int main()
 {
-    DifferentialEvolution<int> moether(20);
+    moe::DifferentialEvolution<int> moether(20);
 
     long long n = 2261953600;
 

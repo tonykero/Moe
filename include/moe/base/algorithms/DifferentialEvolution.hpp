@@ -5,6 +5,9 @@
 
 #include "NumericAlgorithmImpl.hpp"
 
+namespace moe
+{
+
 template <typename GenotypeType>
 class DifferentialEvolution : public NumericAlgorithm<GenotypeType>
 {
@@ -122,4 +125,6 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
     }
 
     Algorithm<GenotypeType>::m_bestMoe = population[index];
+}
+
 }
