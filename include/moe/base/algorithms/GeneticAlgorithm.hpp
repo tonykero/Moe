@@ -13,7 +13,8 @@ class GeneticAlgorithm : public Algorithm<GenotypeType>
 {
     public:
         GeneticAlgorithm( unsigned int _moesPerGen, std::vector<GenotypeType> _dataset, unsigned int _eliteCopies = 0, float _mutationRate = 0.1f, float _crossoverRate = 0.5f );
-        
+        GeneticAlgorithm( const GAParameters<GenotypeType>& _parameters );
+
         void                                run                 ( unsigned int _generations ) override;
         
         void                                setFixedSize        ( unsigned int _size );
@@ -71,7 +72,8 @@ m_moesPerGen    ( _moesPerGen       ),
 m_eliteCopies   ( _eliteCopies      ),
 m_mutationRate  ( _mutationRate     ),
 m_crossoverRate ( _crossoverRate    ),
-m_dataset       ( _dataset          )
+m_dataset       ( _dataset          ),
+dist_dataset( 0, m_dataset.size()-1 )
 {
     registerMutation( std::make_unique< Substitution<GenotypeType>  >(Algorithm<GenotypeType>::m_generator), moe::mtn::Substitution );
     registerMutation( std::make_unique< Insertion<GenotypeType>     >(Algorithm<GenotypeType>::m_generator), moe::mtn::Insertion    );
@@ -80,8 +82,12 @@ m_dataset       ( _dataset          )
     registerCrossover(std::make_unique< OnePoint<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::crx::OnePoint    );
     registerCrossover(std::make_unique< TwoPoint<GenotypeType>      >(Algorithm<GenotypeType>::m_generator), moe::crx::TwoPoint    );
     registerCrossover(std::make_unique< Uniform<GenotypeType>       >(Algorithm<GenotypeType>::m_generator, m_crossoverRate), moe::crx::Uniform);
-    
-    dist_dataset = std::uniform_int_distribution<unsigned int>( 0, m_dataset.size()-1 );
+}
+
+template <typename GenotypeType>
+GeneticAlgorithm<GenotypeType>::GeneticAlgorithm( const GAParameters<GenotypeType>& _parameters )
+:GeneticAlgorithm<GenotypeType>(_parameters.moesPerGen, _parameters.dataset, _parameters.eliteCopies, _parameters.mutationRate, _parameters.crossoverRate)
+{
 }
 
 template <typename GenotypeType>

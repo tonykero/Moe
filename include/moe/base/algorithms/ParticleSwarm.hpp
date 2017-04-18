@@ -10,6 +10,7 @@ class ParticleSwarm : public NumericAlgorithm<GenotypeType>
 {
     public:
         ParticleSwarm( unsigned int _moesPerGen, float _weight, float _coef1, float _coef2, unsigned int _dimensions = 1, std::vector<GenotypeType> _range = { std::numeric_limits<GenotypeType>::lowest() , std::numeric_limits<GenotypeType>::max() });
+        ParticleSwarm( const PSParameters<GenotypeType>& _parameters );
 
         void run( unsigned int _generations ) override;
 
@@ -30,6 +31,12 @@ m_coef2     ( _coef2 )
 {
 }
 
+template <typename GenotypeType>
+ParticleSwarm<GenotypeType>::ParticleSwarm( const PSParameters<GenotypeType>& _parameters )
+:ParticleSwarm<GenotypeType>( _parameters.moesPerGen, _parameters.inertia, _parameters.coef1, _parameters.coef2, _parameters.dimensions, _parameters.range )
+{
+    
+}
 
 template <typename GenotypeType>
 void ParticleSwarm<GenotypeType>::run( unsigned int _generations )

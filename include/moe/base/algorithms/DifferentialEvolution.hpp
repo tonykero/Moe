@@ -13,7 +13,9 @@ class DifferentialEvolution : public NumericAlgorithm<GenotypeType>
 {
     public:
         DifferentialEvolution(unsigned int _moesPerGen, float _differentiation = 0.9f ,float _crossoverRate = 0.5f, unsigned int _dimensions = 1, std::vector<GenotypeType> _range = { std::numeric_limits<GenotypeType>::lowest() , std::numeric_limits<GenotypeType>::max() } );
-        
+        DifferentialEvolution( const DEParameters<GenotypeType>& _parameters );
+
+
         void run( unsigned int _generations ) override;
 
     private:
@@ -32,6 +34,12 @@ m_differentiation   ( _differentiation  ),
 m_crossoverRate     ( _crossoverRate    )
 {
 
+}
+
+template <typename GenotypeType>
+DifferentialEvolution<GenotypeType>::DifferentialEvolution( const DEParameters<GenotypeType>& _parameters )
+:DifferentialEvolution<GenotypeType>( _parameters.moesPerGen, _parameters.differentiation, _parameters.crossoverRate, _parameters.dimensions, _parameters.range )
+{
 }
 
 template <typename GenotypeType>
