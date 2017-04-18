@@ -11,7 +11,14 @@ int main()
     auto dataset = moe::util::getAlphabet<char>();
     dataset.push_back(' '); // add space
 
-    moe::GeneticAlgorithm<char> moether(200, dataset, 100); // char will be the Base Type for genotype creations
+
+    moe::GeneticAlgorithm<char> moether( GAParameters<char>() 
+                                            .withMoesPerGen(200)
+                                            .withDataset(dataset)
+                                            .withEliteCopies(100));
+
+    //moe::GeneticAlgorithm<char> moether(200, dataset, 100); // char will be the Base Type for genotype creations
+    
     std::vector<char> target = {'h','e','l','l','o',' ','w','o','r','l','d'};
 
     moether.setFitnessFunction( [target](auto moe) -> double

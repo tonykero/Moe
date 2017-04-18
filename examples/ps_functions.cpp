@@ -31,7 +31,13 @@ double f(double x, double y)
 
 int main()
 {
-    moe::ParticleSwarm<double> moether(50, 0.5f, 0.8f, 1.2f, 2, {-10, 10});
+
+    moe::ParticleSwarm<double> moether( PSParameters<double>() 
+                                            .withMoesPerGen(50)
+                                            .withDimensions(2)
+                                            .withRange({-10, 10})
+                                            );
+    //moe::ParticleSwarm<double> moether(50, 0.5f, 0.8f, 1.2f, 2, {-10, 10});
 
     moether.setFitnessFunction( [](auto moe) -> double
     {

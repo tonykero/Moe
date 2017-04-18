@@ -13,7 +13,13 @@ void remove_duplicates(std::vector<char> &str);
 
 int main()
 {
-    moe::GeneticAlgorithm<char> moether(30, {'B', 'C', 'D', 'E'}, 5);
+    moe::GeneticAlgorithm<char> moether( GAParameters<char>()
+                                            .withMoesPerGen(30)
+                                            .withDataset({'B', 'C', 'D', 'E'})
+                                            .withEliteCopies(5)
+                                        );
+
+    //moe::GeneticAlgorithm<char> moether(30, {'B', 'C', 'D', 'E'}, 5);
     
     // we create a 5-node graph, or 5 city map
     // as described here: http://computing.dcu.ie/~humphrys/Notes/Morelli.images/2a.gif

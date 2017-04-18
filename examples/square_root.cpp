@@ -8,7 +8,10 @@
 
 int main()
 {
-    moe::DifferentialEvolution<int> moether(20);
+    moe::DifferentialEvolution<int> moether( DEParameters<int>()
+                                                .withMoesPerGen(20) );
+
+    //moe::DifferentialEvolution<int> moether(20);
 
     long long n = 2261953600;
 
