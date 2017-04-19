@@ -4,6 +4,7 @@
 #include <unordered_map> // register functions
 
 #include "AlgorithmImpl.hpp"
+#include "../parameters/GAParameters.hpp"
 
 namespace moe
 {

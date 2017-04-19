@@ -4,6 +4,7 @@
 #include <numeric> // std::iota
 
 #include "NumericAlgorithmImpl.hpp"
+#include "../parameters/DEParameters.hpp"
 
 namespace moe
 {

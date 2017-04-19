@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NumericAlgorithmImpl.hpp"
+#include "../parameters/PSParameters.hpp"
 
 namespace moe
 {
