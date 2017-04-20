@@ -12,7 +12,7 @@ int main()
     dataset.push_back(' '); // add space
 
 
-    moe::GeneticAlgorithm<char> moether( GAParameters<char>() 
+    moe::GeneticAlgorithm<char> moether( moe::GAParameters<char>() 
                                             .withMoesPerGen(200)
                                             .withDataset(dataset)
                                             .withEliteCopies(100));

@@ -7,51 +7,74 @@
     #include <string>
 #endif
 
-//#define BOOTH
-#define HIMMELBLAU
+#define f(x, y) himmelblau(x, y)
+#define pi ((float)std::acos(-1))
 
-double f(double x, double y)
+float booth(float x, float y)
 {
-    double result;
+    float  op1 = x + 2*y - 7,
+            op2 = 2*x + y - 5;
 
-    #if defined BOOTH
-        double  op1 = x + 2*y - 7,
-                op2 = 2*x + y - 5;
+    return op1*op1 + op2*op2;
+}
 
-        result = op1*op1 + op2*op2;
-    #elif defined HIMMELBLAU
-        double  op1 = x*x + y - 11,
-                op2 = x + y*y - 7;
+float himmelblau(float x, float y)
+{
+    float  op1 = x*x + y - 11,
+            op2 = x + y*y - 7;
     
-        result = op1*op1 + op2*op2;
-    #endif
+    return op1*op1 + op2*op2;
+}
 
-    return result;
+float easom(float x, float y)
+{
+    float  opcos = -std::cos(x) * std::cos(y),
+            xpart = (x-pi)*(x-pi),
+            ypart = (y-pi)*(y-pi),
+            opexp = std::exp( -( xpart + ypart ) );
+
+    return opcos*opexp;
+}
+
+float holdertable(float x, float y)
+{
+    float  optrigo = std::sin(x) * std::cos(y),
+            opexp   = std::exp( std::abs( 1 - std::sqrt( x*x + y*y )/pi ) );
+    
+    return -std::abs( optrigo*opexp );
+}
+
+float ackley(float x, float y)
+{
+    float  op1 = -20 * std::exp( 0.2 * std::sqrt( 0.5 * (x*x + y*y) ) ),
+            op2 = std::exp( 0.5 * ( std::cos( 2*pi*x ) + std::cos( 2*pi*y ) ) );
+    
+    return op1 - op2 + std::exp(1)+20;
 }
 
 int main()
 {
 
-    moe::ParticleSwarm<double> moether( PSParameters<double>() 
-                                            .withMoesPerGen(50)
+    moe::ParticleSwarm<float> moether( moe::PSParameters<float>() 
+                                            .withMoesPerGen(100)
                                             .withDimensions(2)
                                             .withRange({-10, 10})
                                             );
-    //moe::ParticleSwarm<double> moether(50, 0.5f, 0.8f, 1.2f, 2, {-10, 10});
+    //moe::ParticleSwarm<float> moether(50, 0.5f, 0.8f, 1.2f, 2, {-10, 10});
 
     moether.setFitnessFunction( [](auto moe) -> double
     {
-        double  x = moe.genotype[0],
+        float   x = moe.genotype[0],
                 y = moe.genotype[1];
 
-        double  result = f(x, y);
+        float   result = f(x, y);
 
-        return 1/(result+1);
+        return -result;
     });
 
     auto start = std::chrono::high_resolution_clock::now();
     
-        moether.run( 75 );
+        moether.run( 1000 );
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = end-start;

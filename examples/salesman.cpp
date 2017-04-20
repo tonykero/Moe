@@ -13,7 +13,7 @@ void remove_duplicates(std::vector<char> &str);
 
 int main()
 {
-    moe::GeneticAlgorithm<char> moether( GAParameters<char>()
+    moe::GeneticAlgorithm<char> moether( moe::GAParameters<char>()
                                             .withMoesPerGen(30)
                                             .withDataset({'B', 'C', 'D', 'E'})
                                             .withEliteCopies(5)

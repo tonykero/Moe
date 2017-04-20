@@ -8,7 +8,7 @@
 
 int main()
 {
-    moe::DifferentialEvolution<int> moether( DEParameters<int>()
+    moe::DifferentialEvolution<int> moether( moe::DEParameters<int>()
                                                 .withMoesPerGen(20) );
 
     //moe::DifferentialEvolution<int> moether(20);
