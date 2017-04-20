@@ -2,6 +2,7 @@
 
 #include <random> // distributions & engine
 #include <functional> // std::function
+#include <chrono>
 
 #include <moe/base/Moe.hpp>
 #include <moe/base/Mutations.hpp>
@@ -32,6 +33,7 @@ class Algorithm
 
 template <typename GenotypeType>
 Algorithm<GenotypeType>::Algorithm()
+:m_generator( std::chrono::high_resolution_clock::now().time_since_epoch().count() )
 {
 }
 

@@ -3,7 +3,7 @@ namespace crs
 
 TEST_CASE( "Crossover Tests", "[crossovers]" )
 {
-    std::default_random_engine engine;
+    std::default_random_engine engine( std::chrono::high_resolution_clock::now().time_since_epoch().count() );
     
     OnePoint<char>  op(engine);
     TwoPoint<char>  tp(engine);

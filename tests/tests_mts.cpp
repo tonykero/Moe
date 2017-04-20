@@ -3,7 +3,7 @@ namespace mts
 
 TEST_CASE( "Mutations Tests", "[mutations]" )
 {
-    std::default_random_engine engine;
+    std::default_random_engine engine( std::chrono::high_resolution_clock::now().time_since_epoch().count() );
     auto dataset = moe::util::getAlphabet<char>();
     
     Substitution<char>  s(engine);
