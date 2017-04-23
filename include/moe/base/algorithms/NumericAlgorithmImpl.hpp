@@ -17,17 +17,19 @@ class NumericAlgorithm : public Algorithm<GenotypeType>
         unsigned int    m_moesPerGen,
                         m_dimensions;
 
+        std::vector<GenotypeType>           m_range;
         std::uniform_real_distribution<>    dist_genotype;
 };
 
 template <typename GenotypeType>
 NumericAlgorithm<GenotypeType>::NumericAlgorithm( unsigned int _moesPerGen, unsigned int _dimensions, std::vector<GenotypeType> _range )
 :Algorithm<GenotypeType>(),
-m_moesPerGen( _moesPerGen ),
-m_dimensions( _dimensions )
+m_moesPerGen( _moesPerGen   ),
+m_dimensions( _dimensions   ),
+m_range     ( _range        ),
+dist_genotype( _range[0], _range[1] )
 {
     static_assert( std::is_arithmetic<GenotypeType>::value, "NumericAlgorithm only works with arithmetic types" );
-    dist_genotype = std::uniform_real_distribution<>( _range[0], _range[1] );
 }
 
 template <typename GenotypeType>

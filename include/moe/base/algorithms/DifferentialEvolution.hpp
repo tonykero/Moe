@@ -110,6 +110,13 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
                     candidate.genotype[k] = a.genotype[k] + m_differentiation * ( b.genotype[k] - c.genotype[k] );
                 else
                     candidate.genotype[k] = actual.genotype[k];
+                
+                // checks if genotype is still in provided search space
+                if( candidate.genotype[k] != std::max( std::min( candidate.genotype[k], NumericAlgorithm<GenotypeType>::m_range[1]), NumericAlgorithm<GenotypeType>::m_range[0] ) )
+                {
+                    candidate.genotype = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+                    break;
+                }
             }
             candidate.fitness   = Algorithm<GenotypeType>::m_fitnessFunction( candidate );
             

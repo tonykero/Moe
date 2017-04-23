@@ -90,7 +90,16 @@ void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
                 velocities[j][k] += m_coef2*r2*( Algorithm<GenotypeType>::m_bestMoe.genotype[k] - population[j].genotype[k] );
                 
                 population[j].genotype[k] += velocities[j][k];
+                
+                //checks if genotype actual dimension is still in provided search space
+                if( population[j].genotype[k] != std::max( std::min( population[j].genotype[k], NumericAlgorithm<GenotypeType>::m_range[1]), NumericAlgorithm<GenotypeType>::m_range[0] ) )
+                {
+                    population[j].genotype = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+                    velocities[j] = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+                    break;
+                }
             }
+
             population[j].fitness = Algorithm<GenotypeType>::m_fitnessFunction( population[j] );
             if( population[j].fitness > best_genotypes[j].fitness )
             {
