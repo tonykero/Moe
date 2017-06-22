@@ -25,8 +25,7 @@ This example illustrates how Differential Evolution can be used to search for th
 ```cpp
 #include <moe/moe.hpp>
 #include <iostream>
-#include <chrono> // optional
-#include <string> // needed with MSVC 19.0 for overloaded << on std::string
+#include <string>
 
 int main()
 {
@@ -43,19 +42,12 @@ int main()
         return 1/(error+1);
     });
 
-    auto start = std::chrono::high_resolution_clock::now(); // optional
-    
-        moether.run( 50 );
-
-    auto end = std::chrono::high_resolution_clock::now();   // optional
-    std::chrono::duration<float> diff = end-start;          //      //
-
+    moether.run( 50 );  // run 50 generations
 
     long long genotype = moether.getBestMoe().genotype[0];
 
     std::cout   << "genotype: "     << genotype << "\n"
-                << "fitness: "      << moether.getBestMoe().fitness << "\n"
-                << "time spent: "   << diff.count() << " seconds" << std::endl;
+                << "fitness: "      << moether.getBestMoe().fitness << std::endl;
 }
 ```
 
@@ -87,6 +79,14 @@ Moe contains the following features:
         * Parallel Implementation
     * Better Parameters handling
         * Serialization
+
+## How To Use
+
+Add the "include" folder to your include paths and write
+```cpp
+#include <moe/moe.hpp>
+```
+and you're ready to go !
 
 ## Building
 
