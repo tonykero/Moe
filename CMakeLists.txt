@@ -108,6 +108,12 @@ if(BUILD_EXAMPLES)
         )
     
     add_executable(ps_functions ${SOURCE})
+
+    set(SOURCE
+        "examples/sa_functions.cpp"
+        )
+    
+    add_executable(sa_functions ${SOURCE})
 endif()
 
 if(BUILD_TESTS OR COVERAGE)
