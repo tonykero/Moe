@@ -3,7 +3,7 @@ namespace de
     
 TEST_CASE( "Differential Evolution Tests", "[differential_evolution]" )
 {
-    DifferentialEvolution<int> de(20);
+    global::DifferentialEvolution<int> de(20);
 
     long long n = 2261953600;
     

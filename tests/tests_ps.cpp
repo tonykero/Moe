@@ -3,7 +3,7 @@ namespace ps
     
 TEST_CASE( "Particle Swarm Tests", "[particle_swarm]" )
 {
-    ParticleSwarm<double> ps(50, 0.5f, 0.8f, 1.2f, 2, {-10, 10});
+    global::ParticleSwarm<double> ps(50, 0.5f, 0.8f, 1.2f, 2, {-10, 10});
 
     auto booth = [](double x, double y) -> double
     {
