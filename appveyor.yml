@@ -40,3 +40,4 @@ test_script:
   - cmd: square_root.exe
   - cmd: salesman.exe
   - cmd: ps_functions.exe
+  - cmd: sa_functions.exe
