@@ -73,7 +73,6 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
     add_compile_options(/std=c++14
                     /W4
-                    /Wall
                     )
     if(DEBUG)
         #Debug Mode
