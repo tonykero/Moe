@@ -3,7 +3,14 @@ namespace ps
     
 TEST_CASE( "Particle Swarm Tests", "[particle_swarm]" )
 {
-    global::ParticleSwarm<double> ps(50, 0.5f, 0.8f, 1.2f, 2, {-10, 10});
+    ParticleSwarm<double> ps( moe::PSParameters<double>()
+                                        .withMoesPerGen(50)
+                                        .withInertia(0.5f)
+                                        .withCoef1(0.8f)
+                                        .withCoef2(1.2f)
+                                        .withDimensions(2)
+                                        .withRange({-10, 10})
+                                        );
 
     auto booth = [](double x, double y) -> double
     {

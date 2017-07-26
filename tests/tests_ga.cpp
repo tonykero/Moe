@@ -6,7 +6,10 @@ TEST_CASE( "Genetic Algorithm tests", "[genetic_algorithm]" )
     auto dataset = moe::util::getAlphabet<char>();
     dataset.push_back(' ');
 
-    global::GeneticAlgorithm<char> ga( 200, dataset, 100 );
+    GeneticAlgorithm<char> ga( moe::GAParameters<char>()
+                                        .withMoesPerGen(200)
+                                        .withDataset(dataset)
+                                        .withEliteCopies(100) );
 
     SECTION( "Getters tests" )
     {

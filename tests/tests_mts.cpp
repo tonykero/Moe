@@ -22,7 +22,7 @@ TEST_CASE( "Mutations Tests", "[mutations]" )
                         post_size   = post_sample.size();
         unsigned int    count = 0;
         
-        for(unsigned int index = 0; index < pre_size-1; index++)
+        for(unsigned int index = 0; index < pre_size; index++)
         {
             if( sample[index] != post_sample[index] )
                 count++;

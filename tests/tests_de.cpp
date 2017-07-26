@@ -3,7 +3,7 @@ namespace de
     
 TEST_CASE( "Differential Evolution Tests", "[differential_evolution]" )
 {
-    global::DifferentialEvolution<int> de(20);
+    DifferentialEvolution<int> de( moe::DEParameters<int>().withMoesPerGen(20) );
 
     long long n = 2261953600;
     
