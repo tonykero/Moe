@@ -24,6 +24,8 @@ class Algorithm
         const Moe<GenotypeType>&            getBestMoe          () const;
     
     protected:
+        virtual void                        init                ( unsigned int _iterations ) = 0;
+
         std::function< double( const Moe<GenotypeType>& ) > m_fitnessFunction;
                         
         Moe<GenotypeType>           m_bestMoe;

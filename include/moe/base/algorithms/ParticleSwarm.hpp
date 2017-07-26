@@ -15,20 +15,32 @@ class ParticleSwarm : public NumericAlgorithm<GenotypeType>
 
         void run( unsigned int _generations ) override;
 
+    protected:
+        void init( unsigned int _iterations ) override;
+
     private:
         unsigned int    m_generations;
         
         float           m_weight,
                         m_coef1,
                         m_coef2;
+
+        std::vector< Moe<GenotypeType> >            m_population;
+        std::vector< Moe<GenotypeType> >            m_best_genotypes;
+        std::vector< std::vector<GenotypeType> >    m_velocities;
+        std::uniform_real_distribution<float>       m_dist_coef;
 };
 
 template <typename GenotypeType>
 ParticleSwarm<GenotypeType>::ParticleSwarm( unsigned int _moesPerGen, float _weight, float _coef1, float _coef2, unsigned int _dimensions, std::vector<GenotypeType> _range )
 :NumericAlgorithm<GenotypeType>( _moesPerGen, _dimensions, _range ),
-m_weight    ( _weight ),
-m_coef1     ( _coef1 ),
-m_coef2     ( _coef2 )
+m_weight        ( _weight       ),
+m_coef1         ( _coef1        ),
+m_coef2         ( _coef2        ),
+m_population    ( _moesPerGen   ),
+m_best_genotypes(_moesPerGen    ),
+m_velocities    (_moesPerGen    ),
+m_dist_coef     ( 0.0f, 1.0f    )
 {
 }
 
@@ -40,32 +52,23 @@ ParticleSwarm<GenotypeType>::ParticleSwarm( const PSParameters<GenotypeType>& _p
 }
 
 template <typename GenotypeType>
-void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
+void ParticleSwarm<GenotypeType>::init( unsigned int _iterations )
 {
-    m_generations = _generations;
-
-    std::vector< Moe<GenotypeType> >            population      ( NumericAlgorithm<GenotypeType>::m_moesPerGen );
-    std::vector< Moe<GenotypeType> >            best_genotypes  ( NumericAlgorithm<GenotypeType>::m_moesPerGen );
-    std::vector< std::vector<GenotypeType> >    velocities      ( NumericAlgorithm<GenotypeType>::m_moesPerGen );
-
-    std::uniform_real_distribution<float> dist_coef     ( 0.0f, 1.0f );
-
-    //TODO: getRandomGenotype() -> getRandomVector()
-    //TODO: getRandomVector( range );
+    m_generations = _iterations;
 
     double max = 0.0;
     unsigned int    index = 0,
                     count = 0;
     
-    for( auto& moe : population )
+    for( auto& moe : m_population )
     {
         moe.genotype            = NumericAlgorithm<GenotypeType>::getRandomGenotype();
         moe.fitness             = Algorithm<GenotypeType>::m_fitnessFunction( moe );
         
-        velocities[count]       = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+        m_velocities[count]       = NumericAlgorithm<GenotypeType>::getRandomGenotype();
         
-        best_genotypes[count].genotype  = moe.genotype;
-        best_genotypes[count].fitness   = moe.fitness;
+        m_best_genotypes[count].genotype  = moe.genotype;
+        m_best_genotypes[count].fitness   = moe.fitness;
         if( max < moe.fitness )
         {
             max = moe.fitness;
@@ -73,39 +76,45 @@ void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
         }
         count++;
     }
-    
-    Algorithm<GenotypeType>::m_bestMoe = population[index];
+
+    Algorithm<GenotypeType>::m_bestMoe = m_population[index];
+}
+
+template <typename GenotypeType>
+void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
+{
+    this->init( _generations );
 
     for( unsigned int i = 0; i < m_generations; i++ )
     {
-        for( unsigned int j = 0; j < population.size(); j++ )
+        for( unsigned int j = 0; j < m_population.size(); j++ )
         {
             for( unsigned int k = 0; k < NumericAlgorithm<GenotypeType>::m_dimensions; k++ )
             {
-                float   r1 = dist_coef( Algorithm<GenotypeType>::m_generator ),
-                        r2 = dist_coef( Algorithm<GenotypeType>::m_generator );
+                float   r1 = m_dist_coef( Algorithm<GenotypeType>::m_generator ),
+                        r2 = m_dist_coef( Algorithm<GenotypeType>::m_generator );
 
-                velocities[j][k] *= m_weight;
-                velocities[j][k] += m_coef1*r1*( best_genotypes[j].genotype[k] - population[j].genotype[k] );
-                velocities[j][k] += m_coef2*r2*( Algorithm<GenotypeType>::m_bestMoe.genotype[k] - population[j].genotype[k] );
+                m_velocities[j][k] *= m_weight;
+                m_velocities[j][k] += m_coef1*r1*( m_best_genotypes[j].genotype[k] - m_population[j].genotype[k] );
+                m_velocities[j][k] += m_coef2*r2*( Algorithm<GenotypeType>::m_bestMoe.genotype[k] - m_population[j].genotype[k] );
                 
-                population[j].genotype[k] += velocities[j][k];
+                m_population[j].genotype[k] += m_velocities[j][k];
                 
                 //checks if genotype actual dimension is still in provided search space
-                if( population[j].genotype[k] != std::max( std::min( population[j].genotype[k], NumericAlgorithm<GenotypeType>::m_range[1]), NumericAlgorithm<GenotypeType>::m_range[0] ) )
+                if( m_population[j].genotype[k] != std::max( std::min( m_population[j].genotype[k], NumericAlgorithm<GenotypeType>::m_range[1]), NumericAlgorithm<GenotypeType>::m_range[0] ) )
                 {
-                    population[j].genotype = NumericAlgorithm<GenotypeType>::getRandomGenotype();
-                    velocities[j] = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+                    m_population[j].genotype = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+                    m_velocities[j] = NumericAlgorithm<GenotypeType>::getRandomGenotype();
                     break;
                 }
             }
 
-            population[j].fitness = Algorithm<GenotypeType>::m_fitnessFunction( population[j] );
-            if( population[j].fitness > best_genotypes[j].fitness )
+            m_population[j].fitness = Algorithm<GenotypeType>::m_fitnessFunction( m_population[j] );
+            if( m_population[j].fitness > m_best_genotypes[j].fitness )
             {
-                best_genotypes[j] = population[j];
-                if( best_genotypes[j].fitness > Algorithm<GenotypeType>::m_bestMoe.fitness )
-                    Algorithm<GenotypeType>::m_bestMoe = best_genotypes[j];
+                m_best_genotypes[j] = m_population[j];
+                if( m_best_genotypes[j].fitness > Algorithm<GenotypeType>::m_bestMoe.fitness )
+                    Algorithm<GenotypeType>::m_bestMoe = m_best_genotypes[j];
             }
         }
     }

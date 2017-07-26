@@ -40,6 +40,10 @@ class GeneticAlgorithm : public Algorithm<GenotypeType>
 
         std::vector<GenotypeType>           getRandomGenotype   ();
 
+    protected:
+        void                                init(unsigned int _generations) override;
+
+
     private:
         void                                            updateMutationsKeys ();
         std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> crossover           ( const Moe<GenotypeType>& _parent1, const Moe<GenotypeType>& _parent2 );
@@ -57,6 +61,9 @@ class GeneticAlgorithm : public Algorithm<GenotypeType>
         bool            m_isCrossoverEnabled    = true,
                         m_isMutationEnabled     = true;
 
+        std::vector<Moe<GenotypeType>>  m_population;
+        std::vector<double>             m_fitnesses;
+
         std::unordered_map< unsigned int, std::unique_ptr< Mutation<GenotypeType> > > m_mutations;
         std::unordered_map< unsigned int, std::unique_ptr< Crossover<GenotypeType> >> m_crossovers;
         std::vector<unsigned int>   m_keys; // mutations IDs
@@ -73,6 +80,8 @@ m_moesPerGen    ( _moesPerGen       ),
 m_eliteCopies   ( _eliteCopies      ),
 m_mutationRate  ( _mutationRate     ),
 m_crossoverRate ( _crossoverRate    ),
+m_population    ( m_moesPerGen      ),
+m_fitnesses     ( m_population.size()),
 m_dataset       ( _dataset          ),
 dist_dataset( 0, m_dataset.size()-1 )
 {
@@ -92,53 +101,57 @@ GeneticAlgorithm<GenotypeType>::GeneticAlgorithm( const GAParameters<GenotypeTyp
 }
 
 template <typename GenotypeType>
-void GeneticAlgorithm<GenotypeType>::run( unsigned int _generations )
+void GeneticAlgorithm<GenotypeType>::init( unsigned int _generations )
 {
     m_generations = _generations;
-            
-    std::vector< Moe<GenotypeType> >    population  ( m_moesPerGen );
-    std::vector< double >               fitnesses   ( population.size() );
-            
-    // Init with a random population
-    for( auto& moe : population )
+
+    for( auto& moe : m_population )
         moe.genotype = getRandomGenotype();
-    // --
+
+}
+
+template <typename GenotypeType>
+void GeneticAlgorithm<GenotypeType>::run( unsigned int _generations )
+{
+    this->init(_generations);
 
     for( unsigned int i = 0; i < m_generations; i++ )
     {
-        // Compute fitnesses
+        // -- Compute fitnesses
         double          max = 0.0;
         unsigned int    index = 0;
                 
-        for( unsigned int j = 0; j < population.size(); j++ )
+        for( unsigned int j = 0; j < m_population.size(); j++ )
         {
-            fitnesses[j] = Algorithm<GenotypeType>::m_fitnessFunction( population[j] );
-            population[j].fitness = fitnesses[j];
+            m_fitnesses[j] = Algorithm<GenotypeType>::m_fitnessFunction( m_population[j] );
+            m_population[j].fitness = m_fitnesses[j];
                     
-            if(max < fitnesses[j])
+            if(max < m_fitnesses[j])
             {
-                max = fitnesses[j];
+                max = m_fitnesses[j];
                 index = j;
             }
         }
         // --
                 
-        Algorithm<GenotypeType>::m_bestMoe = population[index];
+        Algorithm<GenotypeType>::m_bestMoe = m_population[index];
         std::vector< Moe<GenotypeType> > new_population(m_eliteCopies, Algorithm<GenotypeType>::m_bestMoe);
 
         while(new_population.size() + 2 < m_moesPerGen)
         {
-            // random selection
-            std::uniform_int_distribution<unsigned int> dist_rnd(0, population.size()-1);
+            // -- Random selection
+            std::uniform_int_distribution<unsigned int> dist_rnd(0, m_population.size()-1);
                     
             unsigned int    a = dist_rnd( Algorithm<GenotypeType>::m_generator ),
                             b = dist_rnd( Algorithm<GenotypeType>::m_generator );
 
-            Moe<GenotypeType>   selected1 = population[a],
-                                selected2 = population[b],
+            Moe<GenotypeType>   selected1 = m_population[a],
+                                selected2 = m_population[b],
                                 offspring1,
                                 offspring2;
+            // --
 
+            // -- Crossover
             if(m_isCrossoverEnabled)
             {
                 std::pair<std::vector<GenotypeType>, std::vector<GenotypeType>> pair;
@@ -146,7 +159,9 @@ void GeneticAlgorithm<GenotypeType>::run( unsigned int _generations )
                 offspring1.genotype = pair.first;
                 offspring2.genotype = pair.second;
             }
+            // --
 
+            // -- Mutation
             if(m_isMutationEnabled)
             {
                 std::bernoulli_distribution dist_mutation( m_mutationRate );
@@ -157,11 +172,11 @@ void GeneticAlgorithm<GenotypeType>::run( unsigned int _generations )
                 if(dist_mutation( Algorithm<GenotypeType>::m_generator ))
                     mutate(offspring2);
             }
-                    
+            //
             new_population.push_back(offspring1);
             new_population.push_back(offspring2);
         }
-        population = std::move(new_population);
+        m_population = std::move(new_population);
     }
 }
 

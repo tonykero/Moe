@@ -15,6 +15,9 @@ class SimulatedAnnealing : public NumericAlgorithm<GenotypeType>
 
         void run( unsigned int _generations ) override;
 
+    protected:
+        void init( unsigned int _iterations ) override;
+
     private:
         unsigned int    m_generations;
         
@@ -22,6 +25,9 @@ class SimulatedAnnealing : public NumericAlgorithm<GenotypeType>
                         m_coolingRate,
                         m_absoluteZero = 1.0f;
         unsigned int    m_repetitions;
+
+        std::vector<GenotypeType>   m_initial_candidate;
+        double                      m_initial_fitness;
 };
 
 template <typename GenotypeType>
@@ -40,47 +46,57 @@ SimulatedAnnealing<GenotypeType>::SimulatedAnnealing( const SAParameters<Genotyp
 }
 
 template <typename GenotypeType>
+void SimulatedAnnealing<GenotypeType>::init( unsigned int _iterations )
+{
+    m_generations = _iterations;
+
+    m_initial_candidate = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+
+    Algorithm<GenotypeType>::m_bestMoe.genotype    = m_initial_candidate;
+    Algorithm<GenotypeType>::m_bestMoe.fitness     = Algorithm<GenotypeType>::m_fitnessFunction( Algorithm<GenotypeType>::m_bestMoe );
+    m_initial_fitness = Algorithm<GenotypeType>::m_bestMoe.fitness;
+}
+
+template <typename GenotypeType>
 void SimulatedAnnealing<GenotypeType>::run( unsigned int _generations )
 {
-    m_generations = _generations;
 
-    auto initial_candidate = NumericAlgorithm<GenotypeType>::getRandomGenotype();
-    double initial_fitness, max;
-
-    Moe<GenotypeType> bestMoe;
-    bestMoe.genotype    = initial_candidate;
-    bestMoe.fitness     = Algorithm<GenotypeType>::m_fitnessFunction( bestMoe );
-    initial_fitness = max = bestMoe.fitness;
+    this->init(_generations);
 
     for(unsigned int i = 0; i < m_generations; i++)
     {
+        Moe<GenotypeType> candidate;
+        candidate.genotype = NumericAlgorithm<GenotypeType>::getRandomGenotype();
+        
         while(m_temperature > m_absoluteZero)
         {
-            Moe<GenotypeType> candidate;
-            candidate.genotype = NumericAlgorithm<GenotypeType>::getRandomGenotype();
             double fitness = Algorithm<GenotypeType>::m_fitnessFunction( candidate );
 
-            double delta = fitness - initial_fitness;
+            double delta = fitness - m_initial_fitness;
 
-            std::uniform_real_distribution<double> normal_dist(0, 1);
-            double rdm_normal = normal_dist(Algorithm<GenotypeType>::m_generator);
+            std::uniform_real_distribution<double> dist(0, 1);
+            double rdm_normal = dist(Algorithm<GenotypeType>::m_generator);
 
             if( delta > 0 || (std::exp( delta/m_temperature )) > rdm_normal )
             {
-                initial_fitness     = fitness;
-                initial_candidate   = candidate.genotype;
+                m_initial_fitness     = fitness;
+                m_initial_candidate   = candidate.genotype;
 
-                if(initial_fitness > max)
+                if(m_initial_fitness > Algorithm<GenotypeType>::m_bestMoe.fitness)
                 {
-                    bestMoe.genotype    = initial_candidate;
-                    bestMoe.fitness     = initial_fitness;
-                    max                 = initial_fitness;
+                    Algorithm<GenotypeType>::m_bestMoe.genotype    = m_initial_candidate;
+                    Algorithm<GenotypeType>::m_bestMoe.fitness     = m_initial_fitness;
                 }
+            }
+
+            for(unsigned int j = 0; j < NumericAlgorithm<GenotypeType>::m_dimensions; j++)
+            {
+                dist = std::uniform_real_distribution<double>(-1, 1);
+                candidate.genotype[j] += dist(Algorithm<GenotypeType>::m_generator);
             }
             m_temperature *= m_coolingRate;
         }
     }
-    Algorithm<GenotypeType>::m_bestMoe = bestMoe;
 }
 
 }
