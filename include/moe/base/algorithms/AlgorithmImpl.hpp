@@ -2,7 +2,10 @@
 
 #include <random> // distributions & engine
 #include <functional> // std::function
+
+#ifdef USE_TIMESEED
 #include <chrono>
+#endif
 
 #include <moe/base/Moe.hpp>
 #include <moe/base/Mutations.hpp>
@@ -35,7 +38,9 @@ class Algorithm
 
 template <typename GenotypeType>
 Algorithm<GenotypeType>::Algorithm()
+#ifdef USE_TIMESEED
 :m_generator( std::chrono::high_resolution_clock::now().time_since_epoch().count() )
+#endif USE_TIMESEED
 {
 }
 

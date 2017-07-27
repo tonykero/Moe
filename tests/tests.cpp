@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
+#define USE_TIMESEED
 #include <moe/moe.hpp>
 
 using namespace moe;
