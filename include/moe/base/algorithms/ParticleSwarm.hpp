@@ -13,13 +13,13 @@ class ParticleSwarm : public NumericAlgorithm<GenotypeType>
         ParticleSwarm( unsigned int _moesPerGen, float _weight, float _coef1, float _coef2, unsigned int _dimensions = 1, std::vector<GenotypeType> _range = { std::numeric_limits<GenotypeType>::lowest() , std::numeric_limits<GenotypeType>::max() });
         ParticleSwarm( const PSParameters<GenotypeType>& _parameters );
 
-        void run( unsigned int _generations ) override;
+        void run( unsigned int _iterations ) override;
 
     protected:
         void init( unsigned int _iterations ) override;
 
     private:
-        unsigned int    m_generations;
+        unsigned int    m_iterations;
         
         float           m_weight,
                         m_coef1,
@@ -54,7 +54,7 @@ ParticleSwarm<GenotypeType>::ParticleSwarm( const PSParameters<GenotypeType>& _p
 template <typename GenotypeType>
 void ParticleSwarm<GenotypeType>::init( unsigned int _iterations )
 {
-    m_generations = _iterations;
+    m_iterations = _iterations;
 
     double max = 0.0;
     unsigned int    index = 0,
@@ -81,11 +81,11 @@ void ParticleSwarm<GenotypeType>::init( unsigned int _iterations )
 }
 
 template <typename GenotypeType>
-void ParticleSwarm<GenotypeType>::run( unsigned int _generations )
+void ParticleSwarm<GenotypeType>::run( unsigned int _iterations )
 {
-    this->init( _generations );
+    this->init( _iterations );
 
-    for( unsigned int i = 0; i < m_generations; i++ )
+    for( unsigned int i = 0; i < m_iterations; i++ )
     {
         for( unsigned int j = 0; j < m_population.size(); j++ )
         {

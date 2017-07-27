@@ -15,7 +15,7 @@ class Algorithm
         Algorithm();
         virtual ~Algorithm();
 
-        virtual void                        run                 ( unsigned int _generations ) = 0;
+        virtual void                        run                 ( unsigned int _iterations ) = 0;
         
         void                                setFitnessFunction  ( std::function< double( const Moe<GenotypeType>& ) > _fitnessFunction );
 

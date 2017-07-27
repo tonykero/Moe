@@ -13,13 +13,13 @@ class SimulatedAnnealing : public NumericAlgorithm<GenotypeType>
         SimulatedAnnealing( float _temperature, float _coolingRate, unsigned int _repetitions, unsigned int _dimensions = 1, std::vector<GenotypeType> _range = { std::numeric_limits<GenotypeType>::lowest() , std::numeric_limits<GenotypeType>::max() } );
         SimulatedAnnealing( const SAParameters<GenotypeType>& _parameters );
 
-        void run( unsigned int _generations ) override;
+        void run( unsigned int _iterations ) override;
 
     protected:
         void init( unsigned int _iterations ) override;
 
     private:
-        unsigned int    m_generations;
+        unsigned int    m_iterations;
         
         float           m_temperature,
                         m_coolingRate,
@@ -48,7 +48,7 @@ SimulatedAnnealing<GenotypeType>::SimulatedAnnealing( const SAParameters<Genotyp
 template <typename GenotypeType>
 void SimulatedAnnealing<GenotypeType>::init( unsigned int _iterations )
 {
-    m_generations = _iterations;
+    m_iterations = _iterations;
 
     m_initial_candidate = NumericAlgorithm<GenotypeType>::getRandomGenotype();
 
@@ -58,12 +58,12 @@ void SimulatedAnnealing<GenotypeType>::init( unsigned int _iterations )
 }
 
 template <typename GenotypeType>
-void SimulatedAnnealing<GenotypeType>::run( unsigned int _generations )
+void SimulatedAnnealing<GenotypeType>::run( unsigned int _iterations )
 {
 
-    this->init(_generations);
+    this->init(_iterations);
 
-    for(unsigned int i = 0; i < m_generations; i++)
+    for(unsigned int i = 0; i < m_iterations; i++)
     {
         Moe<GenotypeType> candidate;
         candidate.genotype = NumericAlgorithm<GenotypeType>::getRandomGenotype();

@@ -17,13 +17,13 @@ class DifferentialEvolution : public NumericAlgorithm<GenotypeType>
         DifferentialEvolution( const DEParameters<GenotypeType>& _parameters );
 
 
-        void    run( unsigned int _generations ) override;
+        void    run( unsigned int _iterations ) override;
 
     protected:
         void    init(unsigned int _iterations) override;
 
     private:
-        unsigned int    m_generations;
+        unsigned int    m_iterations;
                         
         float           m_differentiation,
                         m_crossoverRate;
@@ -52,7 +52,7 @@ DifferentialEvolution<GenotypeType>::DifferentialEvolution( const DEParameters<G
 template<typename GenotypeType>
 void DifferentialEvolution<GenotypeType>::init( unsigned int _iterations )
 {
-    m_generations = _iterations;
+    m_iterations = _iterations;
 
     double          max = 0.0;
     unsigned int    index = 0,
@@ -75,11 +75,11 @@ void DifferentialEvolution<GenotypeType>::init( unsigned int _iterations )
 }
 
 template <typename GenotypeType>
-void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
+void DifferentialEvolution<GenotypeType>::run( unsigned int _iterations )
 {
-    this->init(_generations);
+    this->init(_iterations);
 
-    for( unsigned int i = 0; i < m_generations; i++ )
+    for( unsigned int i = 0; i < m_iterations; i++ )
     {
         for(unsigned int j = 0; j < m_population.size(); j++ )
         {
@@ -118,7 +118,7 @@ void DifferentialEvolution<GenotypeType>::run( unsigned int _generations )
             std::uniform_int_distribution<unsigned int> dist_dim( 1, NumericAlgorithm<GenotypeType>::m_dimensions );
             unsigned int r = dist_dim( Algorithm<GenotypeType>::m_generator );
 
-            for( unsigned int k = 0; k <= NumericAlgorithm<GenotypeType>::m_dimensions-1; k++ )
+            for( unsigned int k = 0; k < NumericAlgorithm<GenotypeType>::m_dimensions; k++ )
             {
                 std::bernoulli_distribution dist_crossover( m_crossoverRate );
 
