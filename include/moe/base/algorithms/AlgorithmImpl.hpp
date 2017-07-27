@@ -40,7 +40,7 @@ template <typename GenotypeType>
 Algorithm<GenotypeType>::Algorithm()
 #ifdef USE_TIMESEED
 :m_generator( std::chrono::high_resolution_clock::now().time_since_epoch().count() )
-#endif USE_TIMESEED
+#endif
 {
 }
 

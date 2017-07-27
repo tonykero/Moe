@@ -1,6 +1,8 @@
 #pragma once
 
 #ifdef _MSC_VER
+    #pragma warning(disable : 4267 4244 4100)
+
     #include <algorithm> // triggers errors for std::min if not included with MSVC (19.0)
 #endif
 
