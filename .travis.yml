@@ -1,82 +1,32 @@
 language: cpp
 sudo: false
+dist: trusty
 
 matrix:
   include:
 
     - compiler: gcc
-      sudo: true
-      addons:
+      sudo: required
+      addons: &gcc5
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-5']
       env: COMPILER=g++-5 COVERAGE=1
     
-    - compiler: gcc
-      addons: &gcc5
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5']
-      env: COMPILER=g++-5 DEBUG=0
-    
-    - compiler: gcc
-      addons: &gcc6
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-6']
-      env: COMPILER=g++-6 DEBUG=0
-    
     - compiler: clang
       addons: &clang36
         apt:
-          sources: ['llvm-toolchain-precise-3.6', 'ubuntu-toolchain-r-test']
+          sources: ['llvm-toolchain-trusty', 'ubuntu-toolchain-r-test']
           packages: ['clang-3.6']
-      env: COMPILER=clang++-3.6 DEBUG=0
-    
-    - compiler: clang
-      addons: &clang37
-        apt:
-          sources: ['llvm-toolchain-precise-3.7', 'ubuntu-toolchain-r-test']
-          packages: ['clang-3.7']
-      env: COMPILER=clang++-3.7 DEBUG=0
-    
-    - compiler: clang
-      addons: &clang38
-        apt:
-          sources: ['llvm-toolchain-precise-3.8', 'ubuntu-toolchain-r-test']
-          packages: ['clang-3.8']
-      env: COMPILER=clang++-3.8 DEBUG=0
-
-    - compiler: clang
-      addons: &clang39
-        apt:
-          sources: ['llvm-toolchain-precise-3.9', 'ubuntu-toolchain-r-test']
-          packages: ['clang-3.9']
-      env: COMPILER=clang++-3.9 DEBUG=0
+      env: COMPILER=clang++-3.6 DEBUG=0 COVERAGE=0
 
     - compiler: gcc
       addons: *gcc5
-      env: COMPILER=g++-5 DEBUG=1
-    
-    - compiler: gcc
-      addons: *gcc6
-      env: COMPILER=g++-6 DEBUG=1
+      env: COMPILER=g++-5 DEBUG=1 COVERAGE=0
     
     - compiler: clang
       addons: *clang36
-      env: COMPILER=clang++-3.6 DEBUG=1
-    
-    - compiler: clang
-      addons: *clang37
-      env: COMPILER=clang++-3.7 DEBUG=1
-    
-    - compiler: clang
-      addons: *clang38
-      env: COMPILER=clang++-3.8 DEBUG=1
-
-    - compiler: clang
-      addons: *clang39
-      env: COMPILER=clang++-3.9 DEBUG=1
+      env: COMPILER=clang++-3.6 DEBUG=1 COVERAGE=0
 
 branches:
     only:
